@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace webapi.DTOs
+﻿namespace webapi.DTOs
 {
     public class SummonerDTO
     {
@@ -24,6 +22,5 @@ namespace webapi.DTOs
 
         // 	Summoner level associated with the summoner.
         public long summonerLevel { get; set; }
-
     }
 }

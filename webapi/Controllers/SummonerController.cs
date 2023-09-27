@@ -1,8 +1,10 @@
-﻿using Business_Logic_Layer.Services;
-using Microsoft.AspNetCore.Http;
+﻿using Business_Logic_Layer.Interfaces;
+using Business_Logic_Layer.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Net;
 using webapi.DTOs;
+using System.Text;
 
 namespace webapi.Controllers
 {
@@ -12,36 +14,34 @@ namespace webapi.Controllers
     {
         private readonly ILogger<SummonerController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly ISummonerInfoService _summonerInfoService;
+        private readonly IMatchesService _matchesService;
 
-        public SummonerController(ILogger<SummonerController> logger, IConfiguration configuration)
+        public SummonerController(ILogger<SummonerController> logger, 
+                                  IConfiguration configuration,
+                                  ISummonerInfoService summonerInfoService,
+                                  IMatchesService matchesService)
         {
             _logger = logger;
-            _configuration = configuration;
+            _configuration = configuration; 
+            _summonerInfoService = summonerInfoService;
+            _matchesService = matchesService;
         }
 
         [HttpGet("Info")]
-        public async Task<ActionResult<SummonerDTO>> GetSummonerByNameAsync(
-            string SummonerName, 
-            SummonerInfoService summonerInfoService)
+        public async Task<ActionResult<SummonerDTO>> GetSummonerByNameAsync(string SummonerName)
         {
-            var content = await summonerInfoService.GetSummonerInfoByNameAsync(SummonerName,
-                _configuration.GetValue<string>("Api_Key"));
-
-            return Ok(content);
-
+            return Ok(await _summonerInfoService.GetSummonerInfoByNameAsync(SummonerName));
         }
 
-        [HttpGet("Matches")]
-        public async Task<ActionResult<IEnumerable<List<string>>>> GetMatchesListForGivenSummoner()
-        {
-            List<string> matches = new List<string>
-            {
-                "test1",
-                "test2",
-                "test3"
-            };
 
-            return Ok(matches);
+        [HttpGet("MatchesList")]
+        public async Task<ActionResult<IEnumerable<string>>> GetListOfMatchesForGivenSummoner(string SummonerName)
+        {
+            return Ok(await _matchesService.GetMatchListByNameAsync(SummonerName));
         }
+
     }
+
+
 }
