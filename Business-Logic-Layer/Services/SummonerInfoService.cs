@@ -33,9 +33,7 @@ namespace Business_Logic_Layer.Services
 
         public async Task<string> GetSummonerPUUIDByNameAsync(string summonerName)
         {
-            string SummonerNameAddedToURI = summonerName.Replace(" ", "%20");
-
-            using HttpResponseMessage response = await _client.GetAsync($"{SummonerNameAddedToURI}");
+            using HttpResponseMessage response = await _client.GetAsync($"{summonerName.Replace(" ", "%20")}");
 
             if (!response.IsSuccessStatusCode)
             {

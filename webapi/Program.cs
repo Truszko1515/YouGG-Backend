@@ -1,4 +1,5 @@
 using Business_Logic_Layer.Interfaces;
+using Business_Logic_Layer.Repository;
 using Business_Logic_Layer.Services;
 using System.IO;
 using System.Net.Http.Headers;
@@ -24,7 +25,6 @@ builder.Services.AddHttpClient<ISummonerInfoService, SummonerInfoService>((Servi
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
-
 builder.Services.AddHttpClient<IMatchesService, MatchesService>((Serviceprovider, httpClient) => 
 {
     var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
@@ -37,6 +37,20 @@ builder.Services.AddHttpClient<IMatchesService, MatchesService>((Serviceprovider
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
+builder.Services.AddHttpClient<IMatchDetailsService, MatchDetailsService>((Serviceprovider, httpClient) => 
+{
+    var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
+
+    var path = configuration.GetValue<string>("SingleMatchDetailsURL");
+    var apiKey = configuration.GetValue<string>("ApiKey");
+
+    httpClient.BaseAddress = new Uri(path);
+    httpClient.DefaultRequestHeaders.Accept.Clear();
+    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
+});
+
+builder.Services.AddTransient<ISummonerRepository, SummonerRepository>();
 
 
 var app = builder.Build();

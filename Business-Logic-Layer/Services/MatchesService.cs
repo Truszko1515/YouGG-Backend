@@ -13,21 +13,20 @@ namespace Business_Logic_Layer.Services
 
         public MatchesService(HttpClient client, ISummonerInfoService summonerInfoService)
         {
+            // base request Uri - https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/
             _client = client;
             _summonerInfoService = summonerInfoService;
         }
 
-        public  async Task<IEnumerable<string>> GetMatchListByNameAsync(string summonerName)
+        public async Task<IEnumerable<string>> GetMatchListByNameAsync(string summonerName)
         {
             string summonerPUUID = await _summonerInfoService.GetSummonerPUUIDByNameAsync(summonerName);
-
-            // base Uri - https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/
 
             using HttpResponseMessage response = await _client.GetAsync($"{summonerPUUID}/ids");
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException("An error occured but idk what happened XDD", null, response.StatusCode);
+                throw new HttpRequestException("An error occured but idk what happened XDD, this will be changed", null, response.StatusCode);
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
@@ -36,6 +35,19 @@ namespace Business_Logic_Layer.Services
             return matchesList;
         }
 
-        // ostatni mecz id : "EUW1_6593708412"
+        public async Task<IEnumerable<string>> GetMatchListByPUUIDAsync(string summonerPUUID)
+        {
+            using HttpResponseMessage response = await _client.GetAsync($"{summonerPUUID}/ids");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new HttpRequestException("An error occured but idk what happened XDD, this will be changed", null, response.StatusCode);
+            }
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            IEnumerable<string>? matchesList = JsonSerializer.Deserialize<IEnumerable<string>>(jsonResponse);
+
+            return matchesList;
+        }
     }
 }
