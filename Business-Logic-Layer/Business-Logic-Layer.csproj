@@ -15,8 +15,4 @@
     <ProjectReference Include="..\Data-Acces-Layer\Data-Acces-Layer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\Match\" />
-  </ItemGroup>
-
 </Project>
