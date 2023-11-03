@@ -1,4 +1,5 @@
 ﻿using Business_Logic_Layer.Interfaces;
+using System.Net.Http.Json;
 using System.Text.Json;
 using webapi.DTOs;
 
@@ -21,8 +22,11 @@ namespace Business_Logic_Layer.Services
             using HttpResponseMessage response = await _client.GetAsync($"{SummonerNameAddedToURI}");
 
             if(!response.IsSuccessStatusCode)
-            { 
-                throw new HttpRequestException("Summoner with given name does not exist", null, response.StatusCode);
+            {
+                var responseMessage = await response.Content.ReadFromJsonAsync<ResponseMessageDto>();
+                string message = responseMessage.status.message;
+
+                throw new HttpRequestException(message, null, response.StatusCode);
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
@@ -33,11 +37,15 @@ namespace Business_Logic_Layer.Services
 
         public async Task<string> GetSummonerPUUIDByNameAsync(string summonerName)
         {
+            
             using HttpResponseMessage response = await _client.GetAsync($"{summonerName.Replace(" ", "%20")}");
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException("An error occured but idk what happened XDD", null, response.StatusCode);
+                var responseMessage = await response.Content.ReadFromJsonAsync<ResponseMessageDto>();
+                string message = responseMessage.status.message;
+
+                throw new HttpRequestException(message, null, response.StatusCode);
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();

@@ -19,17 +19,21 @@ namespace webapi.Controllers
         private readonly IMatchesService _matchesService;
         private readonly IMatchDetailsService _matchDetailsService;
 
+        private readonly ISummonerRepository _summonerRepository;
+
         public TestSummonerController(ILogger<TestSummonerController> logger, 
                                   IConfiguration configuration,
                                   ISummonerInfoService summonerInfoService,
                                   IMatchesService matchesService,
-                                  IMatchDetailsService matchDetailsService)
+                                  IMatchDetailsService matchDetailsService,
+                                  ISummonerRepository summonerRepository)
         {
             _logger = logger;
             _configuration = configuration; 
             _summonerInfoService = summonerInfoService;
             _matchesService = matchesService;
             _matchDetailsService = matchDetailsService;
+            _summonerRepository = summonerRepository;
         }
 
         [HttpGet("Info")]
@@ -50,24 +54,12 @@ namespace webapi.Controllers
         {
             return Ok(await _matchDetailsService.GetMatchDetailsByMatchIdAsync(matchID));
         }
-
-        [HttpGet("LastMatchDetails")]
-        public async Task<ActionResult<MatchDto>> GetLastMatchDetailsAsync(string summonerName)
+        [HttpGet("QueueTypes")]
+        public async Task<ActionResult<MatchDto>> GetQueueTypes(string summonerName)
         {
-            return Ok(await _matchDetailsService.GetLastMatchDetailsByNameAsync(summonerName));
+            return Ok(await _summonerRepository.GetQueueTypes(summonerName));
         }
 
-        [HttpGet("MatchParticipants")]
-        public async Task<IActionResult> GetLastMatchPatricipants(string summonerName)
-        {
-            return Ok(await _matchDetailsService.GetParticipantsOfLastMatchAsync(summonerName));
-        }
-
-        [HttpGet("SummonerKDA")]
-        public async Task<IActionResult> GetSummonerKdaAsync(string summonerName)
-        {
-            return Ok(await _matchDetailsService.GetSummonerKDAFromLastTwentyGames(summonerName));
-        }
 
 
     }

@@ -34,9 +34,15 @@ export default defineConfig({
             '^/weatherforecast': {
                 target: 'https://localhost:7041/',
                 secure: false
+            },
+            '^/summonerKDA': {
+                target: 'https://localhost:7041/api/Summoner/KDA',
+                secure: true
             }
+
         },
         port: 5173,
+        // port : 5173
         https: {
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),

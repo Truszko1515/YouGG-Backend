@@ -1,6 +1,7 @@
 ﻿using Business_Logic_Layer.Interfaces;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Net.Http.Json;
 using System.Text.Json;
 using webapi.DTOs;
 
@@ -22,11 +23,15 @@ namespace Business_Logic_Layer.Services
         {
             string summonerPUUID = await _summonerInfoService.GetSummonerPUUIDByNameAsync(summonerName);
 
-            using HttpResponseMessage response = await _client.GetAsync($"{summonerPUUID}/ids");
+            using HttpResponseMessage response = 
+                await _client.GetAsync($"{summonerPUUID}/ids?queue=420&start=0&count=20");
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException("An error occured but idk what happened XDD, this will be changed", null, response.StatusCode);
+                var responseMessage = await response.Content.ReadFromJsonAsync<ResponseMessageDto>();
+                string message = responseMessage.status.message;
+
+                throw new HttpRequestException(message, null, response.StatusCode);
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
@@ -41,7 +46,10 @@ namespace Business_Logic_Layer.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException("An error occured but idk what happened XDD, this will be changed", null, response.StatusCode);
+                var responseMessage = await response.Content.ReadFromJsonAsync<ResponseMessageDto>();
+                string message = responseMessage.status.message;
+
+                throw new HttpRequestException(message, null, response.StatusCode);
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
