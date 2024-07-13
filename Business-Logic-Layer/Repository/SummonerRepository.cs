@@ -3,6 +3,7 @@ using Business_Logic_Layer.Services;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Net.Http;
+using System.Security.Cryptography;
 
 namespace Business_Logic_Layer.Repository
 {
@@ -11,46 +12,58 @@ namespace Business_Logic_Layer.Repository
         private readonly IMatchDetailsService  _matchDetailsService;
         private readonly IMatchesService _matchesService;
         private readonly ISummonerInfoService _summonerInfoService;
+        private readonly ISummonerPUUIDService _summonerPUUIDService;
 
         public SummonerRepository(IMatchDetailsService matchDetailsService,
                                   IMatchesService matchesService,
-                                  ISummonerInfoService summonerInfoService)
+                                  ISummonerInfoService summonerInfoService,
+                                  ISummonerPUUIDService summonerPUUIDService)
                                   
         {
                 _matchDetailsService = matchDetailsService;
                 _matchesService = matchesService;   
                 _summonerInfoService = summonerInfoService;
+                _summonerPUUIDService = summonerPUUIDService;
         }
 
         private List<MatchDto>? _matchesDetails { get; set; }
 
-        public async Task<object> GetSummonerKDA(string summonerName)
+        public async Task<IEnumerable<float>> GetSummonerKDA(string summonerName)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            var summonerPUUID = await _summonerInfoService.GetSummonerPUUIDByNameAsync(summonerName);
+            var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
             var matchIDs      = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
             var matches       = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchIDs);
 
-            var KDA = matches.SelectMany(match => match.info.participants).
-                              Where(participant => participant.summonerName.ToLower() == summonerName.ToLower()).
-                              Select(participant => participant.kills);
+            var KDA = matches.SelectMany(match => match.info.participants)
+                             .Where(participant => participant.puuid == summonerPUUID)
+                             .Select(p => p.challenges.kda);
+                              
 
             stopwatch.Stop();
             var time = stopwatch.Elapsed;
 
-            return (KDA.Average() + "\n" + time.Seconds + ":" + time.Milliseconds);
+            return KDA;
         }
-
-        public async Task<object> GetQueueTypes(string summonerName)
+        
+        public async Task<IEnumerable<double>> GetSummonerKillsDeathsAssists(string summonerName)
         {
-            var summonerPUUID = await _summonerInfoService.GetSummonerPUUIDByNameAsync(summonerName);
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
             var matchIDs = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
             var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchIDs);
 
-            var queueTypes = matches.Select(match => match.info.queueId);
-            
-            return queueTypes;
+            var KDA = matches.SelectMany(match => match.info.participants).
+                              Where(participant => participant.puuid == summonerPUUID).
+                              Select(participant => Math.Round((participant.kills + participant.assists) / (float)(participant.deaths != 0 ? participant.deaths : 1), 2 ));
+
+            stopwatch.Stop();
+            var time = stopwatch.Elapsed;
+
+            return KDA;
         }
+
     }
 }

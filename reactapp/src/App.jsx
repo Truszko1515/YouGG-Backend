@@ -13,6 +13,8 @@ import Todo from "./Components3/Todo";
 import HeaderTodo from "./Components3/Header";
 
 function App() {
+    const [todo, setTodo] = useState("");
+    const [todoList, setTodoList] = useState([])
     
     return (
         <div className="App">
@@ -28,6 +30,8 @@ export default App;
 
 
 /*    
+            //Todo app version 1
+
             const [todo, setTodo] = useState("");
             const [todoList, setTodoList] = useState([])
         
@@ -41,4 +45,11 @@ export default App;
                 setTodoList={setTodoList}
             ></FormToDo>
             <TodoList todoList={todoList} setTodoList={setTodoList} />  
+*/
+
+/*
+            //Todo app version 2            
+
+            <HeaderTodo />
+            <Todo />
 */

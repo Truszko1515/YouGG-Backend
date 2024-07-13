@@ -2,7 +2,6 @@
 {
     public interface ISummonerRepository
     {
-        Task<object> GetSummonerKDA(string summonerName);
-        Task<object> GetQueueTypes(string summonerName);
+        Task<IEnumerable<float>> GetSummonerKDA(string summonerName);
     }
 }

@@ -14,13 +14,10 @@ namespace Business_Logic_Layer.Services
     public sealed class MatchDetailsService : IMatchDetailsService
     {
         private readonly HttpClient _client;
-        private readonly IMatchesService _matchesService;
 
-        public MatchDetailsService(HttpClient client, IMatchesService matchesService) 
+        public MatchDetailsService(HttpClient client) 
         {
-            // base request Uri - https://europe.api.riotgames.com/lol/match/v5/matches/
             _client = client;
-            _matchesService = matchesService;
         }
 
         public async Task<MatchDto> GetMatchDetailsByMatchIdAsync(string matchId)
@@ -40,7 +37,6 @@ namespace Business_Logic_Layer.Services
 
             return matchDetails;
         }
-
         public async Task<List<MatchDto>> GetMatchDetailsListByMatchIdsAsync(IEnumerable<string> matchIdsList)
         {
             List<MatchDto> matchDetailsList = new List<MatchDto>();

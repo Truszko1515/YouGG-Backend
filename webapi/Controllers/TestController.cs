@@ -6,6 +6,7 @@ using System.Diagnostics.Metrics;
 namespace webapi.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ApiController]
     public class Values2Controller : ControllerBase
     {

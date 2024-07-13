@@ -50,6 +50,18 @@ builder.Services.AddHttpClient<IMatchDetailsService, MatchDetailsService>((Servi
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
+builder.Services.AddHttpClient<ISummonerPUUIDService, SummonerPUUIDService>((Serviceprovider, httpClient) =>
+{
+    var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
+
+    var path = configuration.GetValue<string>("SummonerPuuidBaseUrl");
+    var apiKey = configuration.GetValue<string>("ApiKey");
+
+    httpClient.BaseAddress = new Uri(path);
+    httpClient.DefaultRequestHeaders.Accept.Clear();
+    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
+});
 
 
 builder.Services.AddTransient<ISummonerRepository, SummonerRepository>();
@@ -61,12 +73,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("LocalHostPolicy",
         policy =>
         {
-            policy.WithOrigins("https://localhost:5173")
+            policy
                   .SetIsOriginAllowedToAllowWildcardSubdomains()
+                  .WithOrigins("https://localhost:5173", "http://localhost:3000")
+                  .AllowAnyMethod()
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyHeader();
         });
-
 });
 
 var app = builder.Build();
@@ -85,7 +98,7 @@ app.UseAuthorization();
 
 app.UseMiddleware<GlobalErrorHandlingMiddleware>();
 
-app.UseCors();
+app.UseCors("LocalHostPolicy");
 
 app.MapControllers();
 

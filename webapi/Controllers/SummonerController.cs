@@ -12,11 +12,11 @@ namespace webapi.Controllers
     [ApiController]
     public class SummonerController : ControllerBase
     {
-        private readonly ILogger<TestSummonerController> _logger;
+        private readonly ILogger<SummonerController> _logger;
         private readonly IConfiguration _configuration;
         private readonly ISummonerRepository _summonerRepository;
 
-        public SummonerController(ILogger<TestSummonerController> logger,
+        public SummonerController(ILogger<SummonerController> logger,
                                   IConfiguration configuration,
                                   ISummonerRepository summonerRepository)
         {
@@ -25,10 +25,16 @@ namespace webapi.Controllers
             _summonerRepository = summonerRepository;
         }
 
-        [HttpGet("/SummonersRift-5v5-Ranked/{summonerName}")]
+        [HttpGet("{summonerName}")]
         public async Task<ActionResult> KDA(string summonerName)
         {
             return Ok(await _summonerRepository.GetSummonerKDA(summonerName));
+        }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult> KDAv2(string summonerName)
+        {
+            return Ok(await _summonerRepository.GetSummonerKillsDeathsAssists(summonerName));
         }
     }
 }
