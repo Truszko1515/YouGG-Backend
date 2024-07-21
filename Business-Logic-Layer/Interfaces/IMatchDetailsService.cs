@@ -3,6 +3,6 @@
     public interface IMatchDetailsService
     {
          Task<MatchDto> GetMatchDetailsByMatchIdAsync(string matchId);
-         Task<List<MatchDto>> GetMatchDetailsListByMatchIdsAsync(IEnumerable<string> matchIdsList);
+         Task<List<MatchDto>> GetMatchDetailsListByMatchIdsAsync(IEnumerable<string> matchIdsList, string summonerPUUID);
     }
 }

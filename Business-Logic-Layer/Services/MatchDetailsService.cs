@@ -37,11 +37,11 @@ namespace Business_Logic_Layer.Services
 
             return matchDetails;
         }
-        public async Task<List<MatchDto>> GetMatchDetailsListByMatchIdsAsync(IEnumerable<string> matchIdsList)
+        public async Task<List<MatchDto>> GetMatchDetailsListByMatchIdsAsync(IEnumerable<string> matchesIdsList, string summonerPUUID)
         {
             List<MatchDto> matchDetailsList = new List<MatchDto>();
             
-            foreach (var matchId in matchIdsList) 
+            foreach (var matchId in matchesIdsList) 
             { 
                 MatchDto matchDetails = await GetMatchDetailsByMatchIdAsync(matchId);
                 

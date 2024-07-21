@@ -1,6 +1,7 @@
 using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Repository;
 using Business_Logic_Layer.Services;
+using Microsoft.Extensions.Caching.Memory;
 using System.IO;
 using System.Net.Http.Headers;
 using webapi.Middlewares;
@@ -63,9 +64,12 @@ builder.Services.AddHttpClient<ISummonerPUUIDService, SummonerPUUIDService>((Ser
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
 
+builder.Services.AddTransient<MatchDetailsService>();
+builder.Services.AddTransient<IMatchDetailsService, CachedMatchesDetailsService>();
+
+builder.Services.AddMemoryCache();
 
 builder.Services.AddTransient<ISummonerRepository, SummonerRepository>();
-
 builder.Services.AddTransient<GlobalErrorHandlingMiddleware>();
 
 builder.Services.AddCors(options =>

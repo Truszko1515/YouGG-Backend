@@ -1,5 +1,6 @@
 ﻿using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Services;
+using Microsoft.Extensions.Caching.Memory;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Net.Http;
@@ -14,27 +15,26 @@ namespace Business_Logic_Layer.Repository
         private readonly ISummonerInfoService _summonerInfoService;
         private readonly ISummonerPUUIDService _summonerPUUIDService;
 
+
         public SummonerRepository(IMatchDetailsService matchDetailsService,
                                   IMatchesService matchesService,
                                   ISummonerInfoService summonerInfoService,
-                                  ISummonerPUUIDService summonerPUUIDService)
-                                  
+                                  ISummonerPUUIDService summonerPUUIDService)                                  
         {
                 _matchDetailsService = matchDetailsService;
                 _matchesService = matchesService;   
                 _summonerInfoService = summonerInfoService;
                 _summonerPUUIDService = summonerPUUIDService;
         }
-
-        private List<MatchDto>? _matchesDetails { get; set; }
+       
 
         public async Task<IEnumerable<float>> GetSummonerKDA(string summonerName)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
-            var matchIDs      = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
-            var matches       = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchIDs);
+            var matchesIDs      = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
+            var matches       = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchesIDs, summonerPUUID);
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             var KDA = matches.SelectMany(match => match.info.participants)
                              .Where(participant => participant.puuid == summonerPUUID)
@@ -49,11 +49,12 @@ namespace Business_Logic_Layer.Repository
         
         public async Task<IEnumerable<double>> GetSummonerKillsDeathsAssists(string summonerName)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
 
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
             var matchIDs = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
-            var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchIDs);
+            var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchIDs, summonerPUUID);
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
             var KDA = matches.SelectMany(match => match.info.participants).
                               Where(participant => participant.puuid == summonerPUUID).
