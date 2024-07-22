@@ -2,7 +2,10 @@ using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Repository;
 using Business_Logic_Layer.Services;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.IO;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using webapi.Middlewares;
 
@@ -13,8 +16,25 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddMemoryCache();
+
+
 //  HTTP Client config for every service that sends requests to RIOT API. 
 builder.Services.AddHttpClient();
+
+builder.Services.AddHttpClient<MatchDetailsService>((Serviceprovider, httpClient) =>
+{
+    var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
+
+    var path = configuration.GetValue<string>("SingleMatchDetailsURL");
+    var apiKey = configuration.GetValue<string>("ApiKey");
+
+    httpClient.BaseAddress = new Uri(path);
+    httpClient.DefaultRequestHeaders.Accept.Clear();
+    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
+});
+
 builder.Services.AddHttpClient<ISummonerInfoService, SummonerInfoService>((ServiceProvider, httpClient) =>
 {
     var configuration = ServiceProvider.GetRequiredService<IConfiguration>();
@@ -27,6 +47,7 @@ builder.Services.AddHttpClient<ISummonerInfoService, SummonerInfoService>((Servi
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
+
 builder.Services.AddHttpClient<IMatchesService, MatchesService>((ServiceProvider, httpClient) => 
 {
     var configuration = ServiceProvider.GetRequiredService<IConfiguration>();
@@ -39,18 +60,7 @@ builder.Services.AddHttpClient<IMatchesService, MatchesService>((ServiceProvider
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
-builder.Services.AddHttpClient<IMatchDetailsService, MatchDetailsService>((Serviceprovider, httpClient) => 
-{
-    var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
 
-    var path = configuration.GetValue<string>("SingleMatchDetailsURL");
-    var apiKey = configuration.GetValue<string>("ApiKey");
-
-    httpClient.BaseAddress = new Uri(path);
-    httpClient.DefaultRequestHeaders.Accept.Clear();
-    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-    httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
-});
 builder.Services.AddHttpClient<ISummonerPUUIDService, SummonerPUUIDService>((Serviceprovider, httpClient) =>
 {
     var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
@@ -64,13 +74,31 @@ builder.Services.AddHttpClient<ISummonerPUUIDService, SummonerPUUIDService>((Ser
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
 
-builder.Services.AddTransient<MatchDetailsService>();
-builder.Services.AddTransient<IMatchDetailsService, CachedMatchesDetailsService>();
 
-builder.Services.AddMemoryCache();
+
+builder.Services.AddTransient<MatchDetailsService>(Serviceprovider =>
+{
+    var httpClientFactory = Serviceprovider.GetRequiredService<IHttpClientFactory>();
+    var httpClient = httpClientFactory.CreateClient(typeof(MatchDetailsService).Name);
+
+    return new MatchDetailsService(httpClient);
+});
+
+builder.Services.AddTransient<IMatchDetailsService, CachedMatchesDetailsService>(Serviceprovider =>
+{
+    var matchDetailsService = Serviceprovider.GetRequiredService<MatchDetailsService>();
+    var memoryCache = Serviceprovider.GetRequiredService<IMemoryCache>();
+    
+    return new CachedMatchesDetailsService(matchDetailsService, memoryCache);
+});
+
+
 
 builder.Services.AddTransient<ISummonerRepository, SummonerRepository>();
+
 builder.Services.AddTransient<GlobalErrorHandlingMiddleware>();
+
+
 
 builder.Services.AddCors(options =>
 {

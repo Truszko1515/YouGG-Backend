@@ -30,7 +30,12 @@ namespace Business_Logic_Layer.Repository
 
         public async Task<IEnumerable<float>> GetSummonerKDA(string summonerName)
         {
+
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
+
+            // Create CacheCheckService 
+            // Add Check if matches already exist in cache to prevent requesting for MatchesIDS. 
+
             var matchesIDs      = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
             var matches       = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchesIDs, summonerPUUID);
 

@@ -9,29 +9,30 @@ using System.Threading.Tasks;
 namespace Business_Logic_Layer.Services
 {
     public class CachedMatchesDetailsService : IMatchDetailsService
-    {x
+    {
 
-        private readonly MatchDetailsService _matchDetailsService;
+        private readonly IMatchDetailsService _decorated;
         private readonly IMemoryCache _memoryCache;
-        public CachedMatchesDetailsService(MatchDetailsService matchDetailsService, IMemoryCache memoryCache)
+        public CachedMatchesDetailsService(IMatchDetailsService decorated, IMemoryCache memoryCache)
         {
-            _matchDetailsService = matchDetailsService;
+            _decorated = decorated;
             _memoryCache = memoryCache;
         }
 
         public Task<MatchDto> GetMatchDetailsByMatchIdAsync(string matchId)
-        {
-            // Caching logic to be implemented
-            
-            return  _matchDetailsService.GetMatchDetailsByMatchIdAsync(matchId);
-
+        {          
+            return _decorated.GetMatchDetailsByMatchIdAsync(matchId);
         }
 
-        public Task<List<MatchDto>> GetMatchDetailsListByMatchIdsAsync(IEnumerable<string> matchIdsList, string SummonerPUUID)
+        public Task<List<MatchDto>?> GetMatchDetailsListByMatchIdsAsync(IEnumerable<string> matchIdsList, string SummonerPUUID)
         {
-            // Caching logic to be implemented
 
-            return _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchIdsList, SummonerPUUID);
+                return _memoryCache.GetOrCreateAsync(SummonerPUUID, options =>
+                {
+                    options.SetAbsoluteExpiration(TimeSpan.FromSeconds(180));
+
+                    return _decorated.GetMatchDetailsListByMatchIdsAsync(matchIdsList, SummonerPUUID);
+                });
         }
     }
 }
