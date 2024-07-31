@@ -47,7 +47,7 @@ namespace webapi.Controllers
             return Ok(await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName));
         }
 
-        [HttpGet("[action]/{summonerName}")]
+        [HttpGet("{summonerName}")]
         public async Task<ActionResult<SummonerDTO>> SummonerInfo(string summonerName)
         {
             string summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);

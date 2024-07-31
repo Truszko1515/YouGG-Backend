@@ -14,28 +14,29 @@ namespace Business_Logic_Layer.Repository
         private readonly IMatchesService _matchesService;
         private readonly ISummonerInfoService _summonerInfoService;
         private readonly ISummonerPUUIDService _summonerPUUIDService;
+        private readonly ICacheCheckService _cacheCheckService;
 
+        private readonly List<MatchDto> matchDetails;
 
         public SummonerRepository(IMatchDetailsService matchDetailsService,
                                   IMatchesService matchesService,
                                   ISummonerInfoService summonerInfoService,
-                                  ISummonerPUUIDService summonerPUUIDService)                                  
+                                  ISummonerPUUIDService summonerPUUIDService,
+                                  ICacheCheckService cacheCheckService)                                  
         {
                 _matchDetailsService = matchDetailsService;
                 _matchesService = matchesService;   
                 _summonerInfoService = summonerInfoService;
                 _summonerPUUIDService = summonerPUUIDService;
+                _cacheCheckService = cacheCheckService;
         }
-       
+
+        
 
         public async Task<IEnumerable<float>> GetSummonerKDA(string summonerName)
         {
 
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
-
-            // Create CacheCheckService 
-            // Add Check if matches already exist in cache to prevent requesting for MatchesIDS. 
-
             var matchesIDs      = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
             var matches       = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchesIDs, summonerPUUID);
 

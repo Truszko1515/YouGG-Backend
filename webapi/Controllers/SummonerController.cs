@@ -30,11 +30,5 @@ namespace webapi.Controllers
         {
             return Ok(await _summonerRepository.GetSummonerKDA(summonerName));
         }
-
-        [HttpGet("{summonerName}")]
-        public async Task<ActionResult> KDAv2(string summonerName)
-        {
-            return Ok(await _summonerRepository.GetSummonerKillsDeathsAssists(summonerName));
-        }
     }
 }
