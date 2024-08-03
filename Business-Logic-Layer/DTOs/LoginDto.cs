@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Business_Logic_Layer.Dtos
 {
-    public class UserDto
+    public class LoginDto
     {
-        public required string Username { get; set; }
-        public required string Password { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }
