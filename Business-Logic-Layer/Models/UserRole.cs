@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data_Acces_Layer.Models
+namespace Business_Logic_Layer.Models
 {
     public class UserRole
     {
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
         public User User { get; set; }
         public int RoleId { get; set; }
         public Role Role { get; set; }

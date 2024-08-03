@@ -14,19 +14,21 @@ namespace Business_Logic_Layer.Repository
         private readonly IMatchesService _matchesService;
         private readonly ISummonerInfoService _summonerInfoService;
         private readonly ISummonerPUUIDService _summonerPUUIDService;
+        private readonly ICacheCheckService _cacheCheckService;
 
         private readonly List<MatchDto> matchDetails;
 
         public SummonerRepository(IMatchDetailsService matchDetailsService,
                                   IMatchesService matchesService,
                                   ISummonerInfoService summonerInfoService,
-                                  ISummonerPUUIDService summonerPUUIDService
-            )                                  
+                                  ISummonerPUUIDService summonerPUUIDService,
+                                  ICacheCheckService cacheCheckService)                                  
         {
                 _matchDetailsService = matchDetailsService;
                 _matchesService = matchesService;   
                 _summonerInfoService = summonerInfoService;
                 _summonerPUUIDService = summonerPUUIDService;
+                _cacheCheckService = cacheCheckService;
         }
 
         

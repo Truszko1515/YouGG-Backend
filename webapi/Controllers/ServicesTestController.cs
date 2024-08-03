@@ -6,12 +6,11 @@ using System.Net;
 using webapi.DTOs;
 using System.Text;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Authorization;
 
 namespace webapi.Controllers
 {
     [Route("api/summoner/")]
-    //[EnableCors("LocalHostPolicy")]
+    [EnableCors("LocalHostPolicy")]
     [ApiController]
     public class ServicesTestController : ControllerBase
     {
@@ -73,13 +72,6 @@ namespace webapi.Controllers
         public async Task<ActionResult<MatchDto>> MatchDetails(string matchID)
         {
             return Ok(await _matchDetailsService.GetMatchDetailsByMatchIdAsync(matchID));
-        }
-
-        [HttpGet("[action]")]
-        [Authorize(Roles = "Admin")]
-        public ActionResult<string> AuthorizationTest()
-        {
-            return Ok("Udało sięę :)))");
         }
     }
 

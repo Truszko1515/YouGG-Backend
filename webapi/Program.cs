@@ -1,58 +1,25 @@
-using Business_Logic_Layer.Authentication;
 using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Repository;
 using Business_Logic_Layer.Services;
-using Data_Acces_Layer;
-using Data_Acces_Layer.Interfaces;
-using Data_Acces_Layer.Repository;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using webapi.Middlewares;
-using webapi.OptionsSetup;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen( c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "YouGG",
-        Version = "v1"
-    });
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
-    });
-});
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache();
 
-string? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(connectionString);
-});
-
-// ------ HTTP Client config for every service that sends requests to RIOT API. -------
+//  HTTP Client config for every service that sends requests to RIOT API. 
 builder.Services.AddHttpClient();
 
 builder.Services.AddHttpClient<MatchDetailsService>((Serviceprovider, httpClient) =>
@@ -106,7 +73,7 @@ builder.Services.AddHttpClient<ISummonerPUUIDService, SummonerPUUIDService>((Ser
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
-// ------------------------------------------------------------------------------------
+
 
 
 builder.Services.AddTransient<MatchDetailsService>(Serviceprovider =>
@@ -125,27 +92,13 @@ builder.Services.AddTransient<IMatchDetailsService, CachedMatchesDetailsService>
     return new CachedMatchesDetailsService(matchDetailsService, memoryCache);
 });
 
-builder.Services.AddTransient<DatabaseHealthCheckService>();
 
-
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-
-builder.Services.AddTransient<IJwtProvider, JwtProvider>();
 
 builder.Services.AddTransient<ISummonerRepository, SummonerRepository>();
-
-builder.Services.AddTransient<IMemberRepository, MemberRepository>();
 
 builder.Services.AddTransient<GlobalErrorHandlingMiddleware>();
 
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer();
-
-builder.Services.ConfigureOptions<JwtOptionsSetup>();
-builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
-
-builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 {
@@ -173,14 +126,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
+app.UseAuthorization();
 
 app.UseMiddleware<GlobalErrorHandlingMiddleware>();
 
 app.UseCors("LocalHostPolicy");
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 

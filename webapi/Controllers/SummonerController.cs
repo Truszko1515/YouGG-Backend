@@ -1,6 +1,5 @@
 ﻿using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +25,6 @@ namespace webapi.Controllers
             _summonerRepository = summonerRepository;
         }
 
-        [Authorize]
         [HttpGet("{summonerName}")]
         public async Task<ActionResult> KDA(string summonerName)
         {
