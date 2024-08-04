@@ -2,10 +2,13 @@ using Business_Logic_Layer.Authentication;
 using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Repository;
 using Business_Logic_Layer.Services;
+using Business_Logic_Layer.Validation;
 using Data_Acces_Layer;
 using Data_Acces_Layer.Interfaces;
 using Data_Acces_Layer.Repository;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -146,6 +149,8 @@ builder.Services.ConfigureOptions<JwtOptionsSetup>();
 builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterCredsValidator>(ServiceLifetime.Transient);
 
 builder.Services.AddCors(options =>
 {

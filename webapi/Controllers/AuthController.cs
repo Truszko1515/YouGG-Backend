@@ -26,7 +26,7 @@ namespace webapi.Controllers
 
             if (token == null)
             {
-                return Unauthorized("Incorrect username or password");
+                return Unauthorized("Incorrect E-mail or password");
             }
 
             return Ok(token);
@@ -36,6 +36,7 @@ namespace webapi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
+
             var result = await _authenticationService.Register(registerDto);
 
             if (!result)

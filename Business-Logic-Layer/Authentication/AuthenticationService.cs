@@ -1,12 +1,15 @@
 ﻿using Business_Logic_Layer.Dtos;
 using Business_Logic_Layer.Interfaces;
+using Business_Logic_Layer.Validation;
 using Data_Acces_Layer.Interfaces;
 using Data_Acces_Layer.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,11 +30,11 @@ namespace Business_Logic_Layer.Authentication
             _configuration = configuration;
             _jwtProvider = jwtProvider;
         }
-        public async Task<string> Authenticate(LoginDto userLogsIn)
+        public async Task<string> Authenticate(LoginDto loginCreds)
         {
-            var member = await _memberRepository.GetByEmailAsync(userLogsIn.Email);
+            var member = await _memberRepository.GetByEmailAsync(loginCreds.Email);
 
-            if (member == null || !VerifyPasswordHash(userLogsIn.Password, member.PasswordHash, member.PasswordSalt))
+            if (member == null || !VerifyPasswordHash(loginCreds.Password, member.PasswordHash, member.PasswordSalt))
             {
                 return null;
             }
@@ -41,22 +44,39 @@ namespace Business_Logic_Layer.Authentication
             return token;
         }
 
-        public async Task<bool> Register(RegisterDto userRegister)
+        public async Task<bool> Register(RegisterDto registerCreds)
         {
-            if (!await _memberRepository.IsEmailUniqueAsync(userRegister.Email))
+            
+            if (!await _memberRepository.IsEmailUniqueAsync(registerCreds.Email))
             {
                 return false; // Username already exists
             }
 
-            CreatePasswordHash(userRegister.Password, out string passwordHash, out string passwordSalt);
+            // Validating user registration creds
+
+            var results = await new RegisterCredsValidator(_memberRepository).ValidateAsync(registerCreds);
+            if (!results.IsValid)
+            {
+                StringBuilder stringBuilder = new StringBuilder(string.Empty);
+                
+                foreach (var failure in results.Errors)
+                {
+                    stringBuilder.Append($"{failure.ErrorMessage},");
+                }
+
+                throw new HttpRequestException(stringBuilder.ToString(), null, HttpStatusCode.BadRequest);
+            }
+
+
+            CreatePasswordHash(registerCreds.Password, out string passwordHash, out string passwordSalt);
 
             var user = new User
             {
                 UserId = Guid.NewGuid(),
-                Username = userRegister.Username,
+                Username = registerCreds.Username,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
-                Email = userRegister.Email
+                Email = registerCreds.Email
             };
 
             _memberRepository.AddUser(user);

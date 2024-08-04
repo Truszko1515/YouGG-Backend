@@ -18,8 +18,14 @@ namespace Data_Acces_Layer.Repository
         public async Task<User?> GetByEmailAsync(string email) 
             =>  await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == email);
 
+        public async Task<User?> GetByUsernameAsync(string username)
+            => await _dbContext.Users.SingleOrDefaultAsync(u => u.Username == username);
+
         public async Task<bool> IsEmailUniqueAsync(string email)
             => !await _dbContext.Users.AnyAsync(user => user.Email == email);
+
+        public async Task<bool> IsUsernameUniqueAsync(string username)
+            => !await _dbContext.Users.AnyAsync(user => user.Username == username);
 
         public async Task<List<string>> GetUserRolesAsync(Guid userId)
             => await _dbContext.UserRoles
