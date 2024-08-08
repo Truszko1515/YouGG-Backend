@@ -3,6 +3,7 @@ using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Validation;
 using Data_Acces_Layer.Interfaces;
 using Data_Acces_Layer.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ namespace Business_Logic_Layer.Authentication
             _configuration = configuration;
             _jwtProvider = jwtProvider;
         }
+
         public async Task<string> Authenticate(LoginDto loginCreds)
         {
             var member = await _memberRepository.GetByEmailAsync(loginCreds.Email);
@@ -44,12 +46,12 @@ namespace Business_Logic_Layer.Authentication
             return token;
         }
 
-        public async Task<bool> Register(RegisterDto registerCreds)
+        public async Task<RegisterResponseDto> Register(RegisterDto registerCreds)
         {
-            
+
             if (!await _memberRepository.IsEmailUniqueAsync(registerCreds.Email))
             {
-                return false; // Username already exists
+                return new RegisterResponseDto(false, "User registration failed. Username may already be taken."); // Username already exists
             }
 
             // Validating user registration creds
@@ -64,9 +66,8 @@ namespace Business_Logic_Layer.Authentication
                     stringBuilder.Append($"{failure.ErrorMessage},");
                 }
 
-                throw new HttpRequestException(stringBuilder.ToString(), null, HttpStatusCode.BadRequest);
+                return new RegisterResponseDto(false, stringBuilder.ToString());
             }
-
 
             CreatePasswordHash(registerCreds.Password, out string passwordHash, out string passwordSalt);
 
@@ -80,8 +81,11 @@ namespace Business_Logic_Layer.Authentication
             };
 
             _memberRepository.AddUser(user);
-            return true;
+
+            return new RegisterResponseDto(true, "User registered successfully.");
         }
+
+
 
         private void CreatePasswordHash(string password, out string passwordHash, out string passwordSalt)
         {

@@ -10,6 +10,6 @@ namespace Business_Logic_Layer.Interfaces
     public interface IAuthenticationService
     {
         Task<string> Authenticate(LoginDto userLogsIn);
-        Task<bool> Register(RegisterDto userRegister);
+        Task<RegisterResponseDto> Register(RegisterDto userRegister);
     }
 }

@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using BCrypt.Net;
 using Business_Logic_Layer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
 namespace webapi.Controllers
 {
     [AllowAnonymous]
+    [EnableCors("LocalHostPolicy")]
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -39,12 +41,12 @@ namespace webapi.Controllers
 
             var result = await _authenticationService.Register(registerDto);
 
-            if (!result)
+            if (!result.Success)
             {
-                return BadRequest("User registration failed. Username may already be taken.");
+                return BadRequest(result.Message);
             }
 
-            return Ok("User registered successfully.");
+            return Ok(result.Message);
         }
     }
 }

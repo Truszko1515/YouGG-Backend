@@ -7,6 +7,7 @@ using webapi.DTOs;
 using System.Text;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
+using Data_Acces_Layer.Interfaces;
 
 namespace webapi.Controllers
 {
@@ -24,14 +25,15 @@ namespace webapi.Controllers
         private readonly ISummonerPUUIDService _summonerPUUIDService;
 
         private readonly ISummonerRepository _summonerRepository;
-
+        private readonly IMemberRepository _memberRepository;
         public ServicesTestController(ILogger<ServicesTestController> logger, 
                                   IConfiguration configuration,
                                   ISummonerInfoService summonerInfoService,
                                   IMatchesService matchesService,
                                   IMatchDetailsService matchDetailsService,
                                   ISummonerRepository summonerRepository,
-                                  ISummonerPUUIDService summonerPUUIDService)
+                                  ISummonerPUUIDService summonerPUUIDService,
+                                  IMemberRepository memberRepository)
         {
             _logger = logger;
             _configuration = configuration; 
@@ -40,6 +42,7 @@ namespace webapi.Controllers
             _matchDetailsService = matchDetailsService;
             _summonerRepository = summonerRepository;
             _summonerPUUIDService = summonerPUUIDService;
+            _memberRepository = memberRepository;
         }
 
         [HttpGet("[action]/{summonerName}")]
