@@ -29,7 +29,8 @@ namespace Business_Logic_Layer.Authentication
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username),
+                new Claim("name", user.Username),
+                new Claim("email", user.Email),
             };
 
             var roles = await _memberRepository.GetUserRolesAsync(user.UserId);

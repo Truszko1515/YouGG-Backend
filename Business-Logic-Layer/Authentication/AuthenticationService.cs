@@ -48,6 +48,7 @@ namespace Business_Logic_Layer.Authentication
 
         public async Task<RegisterResponseDto> Register(RegisterDto registerCreds)
         {
+            // Checking if given email already exists
 
             if (!await _memberRepository.IsEmailUniqueAsync(registerCreds.Email))
             {
