@@ -25,9 +25,7 @@ namespace Business_Logic_Layer.Repository
                 _summonerInfoService = summonerInfoService;
                 _summonerPUUIDService = summonerPUUIDService;
         }
-
         
-
         public async Task<IEnumerable<float>> GetSummonerKDA(string summonerName)
         {
 
