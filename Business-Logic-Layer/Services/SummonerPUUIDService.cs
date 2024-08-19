@@ -14,8 +14,7 @@ namespace Business_Logic_Layer.Services
     {
         private readonly HttpClient _client;
         public SummonerPUUIDService(HttpClient client)
-        {
-            
+        {    
                 _client = client;
         }
 

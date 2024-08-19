@@ -70,7 +70,6 @@ builder.Services.AddHttpClient<MatchDetailsService>((Serviceprovider, httpClient
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
-
 builder.Services.AddHttpClient<ISummonerInfoService, SummonerInfoService>((ServiceProvider, httpClient) =>
 {
     var configuration = ServiceProvider.GetRequiredService<IConfiguration>();
@@ -83,7 +82,6 @@ builder.Services.AddHttpClient<ISummonerInfoService, SummonerInfoService>((Servi
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
-
 builder.Services.AddHttpClient<IMatchesService, MatchesService>((ServiceProvider, httpClient) => 
 {
     var configuration = ServiceProvider.GetRequiredService<IConfiguration>();
@@ -96,12 +94,23 @@ builder.Services.AddHttpClient<IMatchesService, MatchesService>((ServiceProvider
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
-
 builder.Services.AddHttpClient<ISummonerPUUIDService, SummonerPUUIDService>((Serviceprovider, httpClient) =>
 {
     var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
 
     var path = configuration.GetValue<string>("SummonerPuuidBaseUrl");
+    var apiKey = configuration.GetValue<string>("ApiKey");
+
+    httpClient.BaseAddress = new Uri(path);
+    httpClient.DefaultRequestHeaders.Accept.Clear();
+    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
+});
+builder.Services.AddHttpClient<ISummonerLeagueService, SummonerLeagueService>((Serviceprovider, httpClient) =>
+{
+    var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
+
+    var path = configuration.GetValue<string>("SummonerLeagueEntry");
     var apiKey = configuration.GetValue<string>("ApiKey");
 
     httpClient.BaseAddress = new Uri(path);

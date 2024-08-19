@@ -20,6 +20,7 @@ namespace webapi.Controllers
         private readonly IMatchesService _matchesService;
         private readonly IMatchDetailsService _matchDetailsService;
         private readonly ISummonerPUUIDService _summonerPUUIDService;
+        private readonly ISummonerLeagueService _summonerLeagueService;
 
         private readonly ISummonerRepository _summonerRepository;
         private readonly IMemberRepository _memberRepository;
@@ -29,7 +30,8 @@ namespace webapi.Controllers
                                   IMatchDetailsService matchDetailsService,
                                   ISummonerRepository summonerRepository,
                                   ISummonerPUUIDService summonerPUUIDService,
-                                  IMemberRepository memberRepository)
+                                  IMemberRepository memberRepository,
+                                  ISummonerLeagueService summonerLeagueService)
         {
             _summonerInfoService = summonerInfoService;
             _matchesService = matchesService;
@@ -37,6 +39,7 @@ namespace webapi.Controllers
             _summonerRepository = summonerRepository;
             _summonerPUUIDService = summonerPUUIDService;
             _memberRepository = memberRepository;
+            _summonerLeagueService = summonerLeagueService;
         }
 
         [HttpGet("{summonerName}")]
@@ -63,19 +66,30 @@ namespace webapi.Controllers
             return Ok(await _matchDetailsService.GetMatchDetailsByMatchIdAsync(matchID));
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public ActionResult<string> AuthorizationTest()
-        {
-            return Ok("Udało sięę :)))");
-        }
-
         [HttpGet("{summonerName}")]
         public async Task<ActionResult<SummonerDTO>> Info(string summonerName)
         {
             string summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
 
             return Ok(await _summonerInfoService.GetSummonerInfoByPuuidAsync(summonerPUUID));
+        }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult<SummonerDTO>> LeagueEntry(string summonerName)
+        {
+            var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
+            var summonerInfo = await _summonerInfoService.GetSummonerInfoByPuuidAsync(summonerPUUID);
+
+            return Ok(await _summonerLeagueService.GetLeagueEntry(summonerInfo.id));
+        }
+
+
+        // Auth Test
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public ActionResult<string> AuthorizationTest()
+        {
+            return Ok("Udało sięę :)))");
         }
     }
 
