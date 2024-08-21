@@ -12,17 +12,17 @@ using webapi.DTOs;
 
 namespace Business_Logic_Layer.Services
 {
-    public sealed class SummonerLeagueService : ISummonerLeagueService
+    public class SummonerTagLineService : ISummonerTagLineService
     {
         private readonly HttpClient _client;
-        public SummonerLeagueService(HttpClient client)
+        public SummonerTagLineService(HttpClient client)
         {
             _client = client;
         }
-
-        public async Task<LeagueEntryDto> GetLeagueEntry(string SummonerId)
+        public async Task<string> GetSummonerTagLine(string SummonerPUUID)
         {
-            using HttpResponseMessage response = await _client.GetAsync($"{SummonerId}");
+
+            using HttpResponseMessage response = await _client.GetAsync($"{SummonerPUUID}");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -33,19 +33,16 @@ namespace Business_Logic_Layer.Services
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            var SummonerLeagueEntry = JsonSerializer.Deserialize<List<LeagueEntryDto>>(jsonResponse);
+            AccountDto? summonerAccount = JsonSerializer.Deserialize<AccountDto>(jsonResponse);
 
-            var result = SummonerLeagueEntry.Select(x => x).Where(x => x.queueType == "RANKED_SOLO_5x5").ToList();
-            var finalResult = result[0];
-
-            if(finalResult == null)
+            if (summonerAccount == null)
             {
-                string message = "This summoner does not have any league entries.";
+                string message = "Problem occured during fetching this account";
 
                 throw new HttpRequestException(message, null, HttpStatusCode.BadRequest);
             }
 
-            return finalResult!;
+            return summonerAccount.tagLine;
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Text;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Authorization;
 using Data_Acces_Layer.Interfaces;
+using Business_Logic_Layer.Dtos;
 
 namespace webapi.Controllers
 {
@@ -21,6 +22,7 @@ namespace webapi.Controllers
         private readonly IMatchDetailsService _matchDetailsService;
         private readonly ISummonerPUUIDService _summonerPUUIDService;
         private readonly ISummonerLeagueService _summonerLeagueService;
+        private readonly ISummonerTagLineService _summonerTagLineService;
 
         private readonly ISummonerRepository _summonerRepository;
         private readonly IMemberRepository _memberRepository;
@@ -31,7 +33,8 @@ namespace webapi.Controllers
                                   ISummonerRepository summonerRepository,
                                   ISummonerPUUIDService summonerPUUIDService,
                                   IMemberRepository memberRepository,
-                                  ISummonerLeagueService summonerLeagueService)
+                                  ISummonerLeagueService summonerLeagueService,
+                                  ISummonerTagLineService summonerTagLineService)
         {
             _summonerInfoService = summonerInfoService;
             _matchesService = matchesService;
@@ -40,6 +43,7 @@ namespace webapi.Controllers
             _summonerPUUIDService = summonerPUUIDService;
             _memberRepository = memberRepository;
             _summonerLeagueService = summonerLeagueService;
+            _summonerTagLineService = summonerTagLineService;
         }
 
         [HttpGet("{summonerName}")]
@@ -75,12 +79,20 @@ namespace webapi.Controllers
         }
 
         [HttpGet("{summonerName}")]
-        public async Task<ActionResult<SummonerDTO>> LeagueEntry(string summonerName)
+        public async Task<ActionResult<LeagueEntryDto>> LeagueEntry(string summonerName)
         {
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
             var summonerInfo = await _summonerInfoService.GetSummonerInfoByPuuidAsync(summonerPUUID);
 
             return Ok(await _summonerLeagueService.GetLeagueEntry(summonerInfo.id));
+        }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult<LeagueEntryDto>> TagLine(string summonerName)
+        {
+            var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
+
+            return Ok(await _summonerTagLineService.GetSummonerTagLine(summonerPUUID));
         }
 
 

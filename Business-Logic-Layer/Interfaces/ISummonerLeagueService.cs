@@ -9,6 +9,6 @@ namespace Business_Logic_Layer.Interfaces
 {
     public interface ISummonerLeagueService
     {
-        Task<List<LeagueEntryDto>> GetLeagueEntry(string SummonerId);
+        Task<LeagueEntryDto> GetLeagueEntry(string SummonerId);
     }
 }

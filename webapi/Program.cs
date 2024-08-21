@@ -110,7 +110,7 @@ builder.Services.AddHttpClient<ISummonerLeagueService, SummonerLeagueService>((S
 {
     var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
 
-    var path = configuration.GetValue<string>("SummonerLeagueEntry");
+    var path = configuration.GetValue<string>("SummonerLeagueEntryURL");
     var apiKey = configuration.GetValue<string>("ApiKey");
 
     httpClient.BaseAddress = new Uri(path);
@@ -118,7 +118,19 @@ builder.Services.AddHttpClient<ISummonerLeagueService, SummonerLeagueService>((S
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
-// ------------------------------------------------------------------------------------
+builder.Services.AddHttpClient<ISummonerTagLineService, SummonerTagLineService>((Serviceprovider, httpClient) =>
+{
+    var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
+
+    var path = configuration.GetValue<string>("SummonerTagLineURL");
+    var apiKey = configuration.GetValue<string>("ApiKey");
+
+    httpClient.BaseAddress = new Uri(path);
+    httpClient.DefaultRequestHeaders.Accept.Clear();
+    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
+});
+// ------------------------------------------------------------------------------------------------------------------
 
 
 builder.Services.AddTransient<MatchDetailsService>(Serviceprovider =>
@@ -186,8 +198,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
 
 app.UseMiddleware<GlobalErrorHandlingMiddleware>();
 
