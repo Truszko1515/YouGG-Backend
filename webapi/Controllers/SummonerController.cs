@@ -26,11 +26,34 @@ namespace webapi.Controllers
             _summonerRepository = summonerRepository;
         }
 
-        [Authorize]
         [HttpGet("{summonerName}")]
         public async Task<ActionResult> KDA(string summonerName)
         {
             return Ok(await _summonerRepository.GetSummonerKDA(summonerName));
+        }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult> ChampionsPlayed(string summonerName)
+        {
+            return Ok(await _summonerRepository.GetSummonerChampionsPlayRate(summonerName));
+        }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult> KillParticipation(string summonerName)
+        {
+            return Ok(await _summonerRepository.GetKillParticipation(summonerName));
+        }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult> Positions(string summonerName)
+        {
+            return Ok(await _summonerRepository.GetPosition(summonerName));
+        }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult> LastGamesRatio(string summonerName)
+        {
+            return Ok(await _summonerRepository.GetLastGamesWinRate(summonerName));
         }
     }
 }

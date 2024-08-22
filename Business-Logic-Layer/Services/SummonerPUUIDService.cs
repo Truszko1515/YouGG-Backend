@@ -1,5 +1,6 @@
 ﻿using Business_Logic_Layer.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -15,13 +16,25 @@ namespace Business_Logic_Layer.Services
     public sealed class SummonerPUUIDService : ISummonerPUUIDService
     {
         private readonly HttpClient _client;
-        public SummonerPUUIDService(HttpClient client)
-        {    
-                _client = client;
+        private readonly IMemoryCache _memoryCache;
+
+        public SummonerPUUIDService(HttpClient client, IMemoryCache memoryCache)
+        {
+            _client = client;
+            _memoryCache = memoryCache;
         }
 
         public async Task<string> GetSummonerPUUIDByNameAsync(string SummonerName)
         {
+            // Normalize SummonerName to use as a cache key
+            string normalizedSummonerName = SummonerName.ToLowerInvariant();
+
+            // Check if the PUUID is in the cache
+            if (_memoryCache.TryGetValue(normalizedSummonerName, out string cachedPuuid))
+            {
+                return cachedPuuid;
+            }
+
             string tagLine = ExtractTagline(SummonerName);
             string gameName = string.Empty;
 
@@ -51,10 +64,17 @@ namespace Business_Logic_Layer.Services
             var jsonResponse = await response.Content.ReadAsStringAsync();
             SummonerDTO? summoner = JsonSerializer.Deserialize<SummonerDTO>(jsonResponse);
 
-            return summoner.puuid;
+            if (summoner != null)
+            {
+                // Cache the PUUID with a relative expiration time
+                _memoryCache.Set(normalizedSummonerName, summoner.puuid, TimeSpan.FromMinutes(10));
+                return summoner.puuid;
+            }
+
+            return string.Empty;
         }
 
-        public static string ExtractTagline(string input)
+        private static string ExtractTagline(string input)
         {
             // Check if the string contains a '#' character
             int taglineIndex = input.IndexOf('#');
