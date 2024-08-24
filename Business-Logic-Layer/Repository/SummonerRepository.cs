@@ -1,5 +1,5 @@
 ﻿using Business_Logic_Layer.Dtos;
-using Business_Logic_Layer.Helpers.CollectionQueryHelpers;
+using Business_Logic_Layer.Helpers;
 using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Services;
 using Microsoft.Extensions.Caching.Memory;
@@ -17,17 +17,24 @@ namespace Business_Logic_Layer.Repository
         private readonly IMatchesService _matchesService;
         private readonly ISummonerInfoService _summonerInfoService;
         private readonly ISummonerPUUIDService _summonerPUUIDService;
+        private readonly ISummonerLeagueService _summonerLeagueEntryService;
+        private readonly ISummonerMasteryService _summonerMasteryService;
+
 
 
         public SummonerRepository(IMatchDetailsService matchDetailsService,
                                   IMatchesService matchesService,
                                   ISummonerInfoService summonerInfoService,
-                                  ISummonerPUUIDService summonerPUUIDService)                                  
+                                  ISummonerPUUIDService summonerPUUIDService,
+                                  ISummonerLeagueService summonerLeagueEntryService,
+                                  ISummonerMasteryService summonerMasteryService)                                  
         {
                 _matchDetailsService = matchDetailsService;
                 _matchesService = matchesService;   
                 _summonerInfoService = summonerInfoService;
                 _summonerPUUIDService = summonerPUUIDService;
+                _summonerLeagueEntryService = summonerLeagueEntryService;
+                _summonerMasteryService = summonerMasteryService;
         }
         
         public async Task<double> GetSummonerKDA(string summonerName)
@@ -158,7 +165,52 @@ namespace Business_Logic_Layer.Repository
 
             return lastGames;
         }
+        public async Task<LeagueEntryDto> GetSummonerLeagueEntries(string summonerName)
+        {
+            var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
+            
+            var summonerInfo = await _summonerInfoService.GetSummonerInfoByPuuidAsync(summonerPUUID);
 
+            var result = await _summonerLeagueEntryService.GetLeagueEntry(summonerInfo.id);
+            
+            return result;
+        }
+        public async Task<List<SummonerMasteryDto>> GetSummonerChampionsMastery(string summonerName)
+        {
+            var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
+            var result = await _summonerMasteryService.GetSummonerChampionsMastery(summonerPUUID);
+            var finalResult = result.ToList();
+
+            // Pobierz dane o bohaterach
+            var champions = await ChampionMappingHelper.GetChampionsAsync();
+
+            // Mapowanie championId na nazwy bohaterów
+            var mappedResult = finalResult.Select(dto => (
+                name: CapitalizeFirstLetterHelper.CapitalizeFirstLetter(champions.ContainsKey(dto.championId) ? champions[dto.championId].Replace("'", "") : "Unknown"),
+                masteryLevel: dto.championLevel,
+                points: dto.championPoints
+            )).ToList();
+
+            List<SummonerMasteryDto> summonerMasteryList = new  List<SummonerMasteryDto>();
+
+            foreach ( var champion in mappedResult) 
+            {
+                summonerMasteryList.Add(new SummonerMasteryDto {
+                    name = champion.name.Replace(" iv","IV"),
+                    masteryLevel = champion.masteryLevel,
+                    points = champion.points
+                });
+            }
+            Console.Clear();
+            // Debugging: Log or inspect the mapped result
+            Console.WriteLine("Mapped Result Count: " + mappedResult.Count());
+            foreach (var item in summonerMasteryList)
+            {
+                Console.WriteLine($"ChampionName: {item.name}, ChampionLevel: {item.masteryLevel}, ChampionPoints: {item.points}");
+            }
+
+            return summonerMasteryList;
+        }
 
         // test
         public async Task<IEnumerable<double>> GetSummonerKillsDeathsAssists(string summonerName)

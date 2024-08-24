@@ -29,7 +29,7 @@ namespace Business_Logic_Layer.Services
 
                 return _memoryCache.GetOrCreateAsync(SummonerPUUID, options =>
                 {
-                    options.SetAbsoluteExpiration(TimeSpan.FromSeconds(3600));
+                    options.SetAbsoluteExpiration(TimeSpan.FromHours(1));
 
                     return (_decorated.GetMatchDetailsListByMatchIdsAsync(matchIdsList, SummonerPUUID));
                 });

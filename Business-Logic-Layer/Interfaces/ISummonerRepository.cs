@@ -9,5 +9,8 @@ namespace Business_Logic_Layer.Interfaces
         Task<double> GetKillParticipation(string summonerName);
         Task<IEnumerable<PositionsChartDto>> GetPosition(string summonerName);
         Task<LastGamesWinRateDto> GetLastGamesWinRate(string summonerName);
+        Task<LeagueEntryDto> GetSummonerLeagueEntries(string summonerName);
+        Task<List<SummonerMasteryDto>> GetSummonerChampionsMastery(string summonerName);
+
     }
 }

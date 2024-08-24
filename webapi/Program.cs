@@ -130,6 +130,19 @@ builder.Services.AddHttpClient<ISummonerTagLineService, SummonerTagLineService>(
     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
+builder.Services.AddHttpClient<ISummonerMasteryService, SummonerMasteryService>((Serviceprovider, httpClient) =>
+{
+    var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
+
+    var path = configuration.GetValue<string>("SummonerChampionsMasteryURL");
+    var apiKey = configuration.GetValue<string>("ApiKey");
+
+    httpClient.BaseAddress = new Uri(path);
+    httpClient.DefaultRequestHeaders.Accept.Clear();
+    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
+});
+
 // ------------------------------------------------------------------------------------------------------------------
 
 

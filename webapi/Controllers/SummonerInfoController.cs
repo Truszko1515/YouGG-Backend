@@ -79,15 +79,6 @@ namespace webapi.Controllers
         }
 
         [HttpGet("{summonerName}")]
-        public async Task<ActionResult<LeagueEntryDto>> LeagueEntry(string summonerName)
-        {
-            var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
-            var summonerInfo = await _summonerInfoService.GetSummonerInfoByPuuidAsync(summonerPUUID);
-
-            return Ok(await _summonerLeagueService.GetLeagueEntry(summonerInfo.id));
-        }
-
-        [HttpGet("{summonerName}")]
         public async Task<ActionResult<LeagueEntryDto>> TagLine(string summonerName)
         {
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);

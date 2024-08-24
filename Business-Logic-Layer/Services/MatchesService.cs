@@ -47,7 +47,7 @@ namespace Business_Logic_Layer.Services
             // Cache the fetched match IDs with a relative expiration time
             if (matchesList != null)
             {
-                _memoryCache.Set($"Matches-{summonerPUUID}", matchesList, TimeSpan.FromMinutes(15)); 
+                _memoryCache.Set($"Matches-{summonerPUUID}", matchesList, TimeSpan.FromHours(1)); 
             }
 
             return matchesList;

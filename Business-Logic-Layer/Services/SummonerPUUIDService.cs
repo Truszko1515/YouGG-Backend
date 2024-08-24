@@ -67,7 +67,7 @@ namespace Business_Logic_Layer.Services
             if (summoner != null)
             {
                 // Cache the PUUID with a relative expiration time
-                _memoryCache.Set(normalizedSummonerName, summoner.puuid, TimeSpan.FromMinutes(10));
+                _memoryCache.Set(normalizedSummonerName, summoner.puuid, TimeSpan.FromHours(1));
                 return summoner.puuid;
             }
 

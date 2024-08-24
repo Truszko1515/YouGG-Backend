@@ -55,5 +55,17 @@ namespace webapi.Controllers
         {
             return Ok(await _summonerRepository.GetLastGamesWinRate(summonerName));
         }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult> LeagueEntries(string summonerName)
+        {
+            return Ok(await _summonerRepository.GetSummonerLeagueEntries(summonerName));
+        }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult> ChampionsMastery(string summonerName)
+        {
+            return Ok(await _summonerRepository.GetSummonerChampionsMastery(summonerName));
+        }
     }
 }
