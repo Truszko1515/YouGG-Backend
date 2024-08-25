@@ -24,11 +24,11 @@ namespace Business_Logic_Layer.Services
             _memoryCache = memoryCache;
         }
 
-        public async Task<LeagueEntryDto> GetLeagueEntry(string SummonerId)
+        public async Task<SummonerLeagueEntryDto> GetLeagueEntry(string SummonerId)
         {
             string cacheKey = $"LeagueEntry-{SummonerId}";
 
-            if (_memoryCache.TryGetValue(cacheKey, out LeagueEntryDto cachedLeagueEntry))
+            if (_memoryCache.TryGetValue(cacheKey, out SummonerLeagueEntryDto cachedLeagueEntry))
             {
                 return cachedLeagueEntry;
             }
@@ -42,7 +42,7 @@ namespace Business_Logic_Layer.Services
             }
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            var SummonerLeagueEntry = JsonSerializer.Deserialize<List<LeagueEntryDto>>(jsonResponse);
+            var SummonerLeagueEntry = JsonSerializer.Deserialize<List<SummonerLeagueEntryDto>>(jsonResponse);
 
             var finalResult = SummonerLeagueEntry.FirstOrDefault(x => x.queueType == "RANKED_SOLO_5x5");
 

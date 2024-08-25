@@ -4,13 +4,14 @@ namespace Business_Logic_Layer.Interfaces
 {
     public interface ISummonerRepository
     {
-        Task<double> GetSummonerKDA(string summonerName);
-        Task<IEnumerable<ChampionsPlayRateDto>> GetSummonerChampionsPlayRate(string summonerName);
+        Task<double> GetKDA(string summonerName);
+        Task<IEnumerable<SummonerChampionsPlayRateDto>> GetChampionsPlayRate(string summonerName);
         Task<double> GetKillParticipation(string summonerName);
-        Task<IEnumerable<PositionsChartDto>> GetPosition(string summonerName);
-        Task<LastGamesWinRateDto> GetLastGamesWinRate(string summonerName);
-        Task<LeagueEntryDto> GetSummonerLeagueEntries(string summonerName);
-        Task<List<SummonerMasteryDto>> GetSummonerChampionsMastery(string summonerName);
+        Task<IEnumerable<SummonerPositionsChartDto>> GetPosition(string summonerName);
+        Task<SummonerLastGamesDto> GetLastGamesWinRate(string summonerName);
+        Task<SummonerLeagueEntryDto> GetLeagueEntries(string summonerName);
+        Task<List<SummonerMasteryDto>> GetChampionsMastery(string summonerName);
+        Task<List<SummonerMatchDetailsDto>> GetMatchesDetails(string summonerName);
 
     }
 }

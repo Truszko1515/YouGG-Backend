@@ -79,7 +79,7 @@ namespace webapi.Controllers
         }
 
         [HttpGet("{summonerName}")]
-        public async Task<ActionResult<LeagueEntryDto>> TagLine(string summonerName)
+        public async Task<ActionResult<SummonerLeagueEntryDto>> TagLine(string summonerName)
         {
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
 

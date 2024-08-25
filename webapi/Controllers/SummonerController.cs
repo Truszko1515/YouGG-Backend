@@ -29,13 +29,13 @@ namespace webapi.Controllers
         [HttpGet("{summonerName}")]
         public async Task<ActionResult> KDA(string summonerName)
         {
-            return Ok(await _summonerRepository.GetSummonerKDA(summonerName));
+            return Ok(await _summonerRepository.GetKDA(summonerName));
         }
 
         [HttpGet("{summonerName}")]
         public async Task<ActionResult> ChampionsPlayed(string summonerName)
         {
-            return Ok(await _summonerRepository.GetSummonerChampionsPlayRate(summonerName));
+            return Ok(await _summonerRepository.GetChampionsPlayRate(summonerName));
         }
 
         [HttpGet("{summonerName}")]
@@ -59,13 +59,19 @@ namespace webapi.Controllers
         [HttpGet("{summonerName}")]
         public async Task<ActionResult> LeagueEntries(string summonerName)
         {
-            return Ok(await _summonerRepository.GetSummonerLeagueEntries(summonerName));
+            return Ok(await _summonerRepository.GetLeagueEntries(summonerName));
         }
 
         [HttpGet("{summonerName}")]
         public async Task<ActionResult> ChampionsMastery(string summonerName)
         {
-            return Ok(await _summonerRepository.GetSummonerChampionsMastery(summonerName));
+            return Ok(await _summonerRepository.GetChampionsMastery(summonerName));
+        }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult> MatchesDetails(string summonerName)
+        {
+            return Ok(await _summonerRepository.GetMatchesDetails(summonerName));
         }
     }
 }

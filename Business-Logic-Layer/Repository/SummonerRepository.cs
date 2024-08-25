@@ -3,8 +3,10 @@ using Business_Logic_Layer.Helpers;
 using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Services;
 using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -37,7 +39,7 @@ namespace Business_Logic_Layer.Repository
                 _summonerMasteryService = summonerMasteryService;
         }
         
-        public async Task<double> GetSummonerKDA(string summonerName)
+        public async Task<double> GetKDA(string summonerName)
         {
             // We are sure that SummonerPUUID here is not null 
             // Otherwise error is handled inside Get method
@@ -56,24 +58,24 @@ namespace Business_Logic_Layer.Repository
 
             return Math.Round(KDA.Average(),2);
         }
-        public async Task<IEnumerable<ChampionsPlayRateDto>> GetSummonerChampionsPlayRate(string summonerName)
+        public async Task<IEnumerable<SummonerChampionsPlayRateDto>> GetChampionsPlayRate(string summonerName)
         {
             // We are sure that SummonerPUUID here is not null 
             // Otherwise error is handled inside Get method
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
             var matchesIDs = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
-            if (!matchesIDs.Any()) return Enumerable.Empty<ChampionsPlayRateDto>();
+            if (!matchesIDs.Any()) return Enumerable.Empty<SummonerChampionsPlayRateDto>();
 
             var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchesIDs, summonerPUUID);
 
             var championCounts = ChampionsPlayRateQuery.GetChampionCounts(matches, summonerPUUID);
             var topChampions = ChampionsPlayRateQuery.GetTopChampions(championCounts);
 
-            List<ChampionsPlayRateDto> champs = new List<ChampionsPlayRateDto>();
+            List<SummonerChampionsPlayRateDto> champs = new List<SummonerChampionsPlayRateDto>();
 
             foreach (var champName in topChampions)
             {
-                champs.Add(new ChampionsPlayRateDto()
+                champs.Add(new SummonerChampionsPlayRateDto()
                 {
                     name = champName,
                     kda = championCounts[champName].Count > 0 ? ((float)championCounts[champName].TotalKda) / championCounts[champName].Count : 0,
@@ -104,22 +106,22 @@ namespace Business_Logic_Layer.Repository
 
             return Math.Round(killParticipations.Average()); 
         }
-        public async Task<IEnumerable<PositionsChartDto>> GetPosition(string summonerName)
+        public async Task<IEnumerable<SummonerPositionsChartDto>> GetPosition(string summonerName)
         {
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
             var matchesIDs = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
-            if (!matchesIDs.Any()) return new List<PositionsChartDto>();
+            if (!matchesIDs.Any()) return new List<SummonerPositionsChartDto>();
 
             var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchesIDs, summonerPUUID);
 
             // Initializing List with roles
-            List<PositionsChartDto> positions = new List<PositionsChartDto>
+            List<SummonerPositionsChartDto> positions = new List<SummonerPositionsChartDto>
             {
-                new PositionsChartDto { RoleInGame = "TOP", Percentage = 0 },
-                new PositionsChartDto { RoleInGame = "JUNGLE", Percentage = 0 },
-                new PositionsChartDto { RoleInGame = "MIDDLE", Percentage = 0 },
-                new PositionsChartDto { RoleInGame = "BOTTOM", Percentage = 0 },
-                new PositionsChartDto { RoleInGame = "UTILITY", Percentage = 0 }
+                new SummonerPositionsChartDto { RoleInGame = "TOP", Percentage = 0 },
+                new SummonerPositionsChartDto { RoleInGame = "JUNGLE", Percentage = 0 },
+                new SummonerPositionsChartDto { RoleInGame = "MIDDLE", Percentage = 0 },
+                new SummonerPositionsChartDto { RoleInGame = "BOTTOM", Percentage = 0 },
+                new SummonerPositionsChartDto { RoleInGame = "UTILITY", Percentage = 0 }
             };
 
             // fetching roles and counting them
@@ -145,18 +147,18 @@ namespace Business_Logic_Layer.Repository
 
             return positions;
         }
-        public async Task<LastGamesWinRateDto> GetLastGamesWinRate(string summonerName)
+        public async Task<SummonerLastGamesDto> GetLastGamesWinRate(string summonerName)
         {
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
             var matchesIDs = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
-            if (!matchesIDs.Any()) return new LastGamesWinRateDto();
+            if (!matchesIDs.Any()) return new SummonerLastGamesDto();
 
             var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchesIDs, summonerPUUID);
 
             var participants = matches.SelectMany(match => match.info.participants)
                                       .Where(participant => participant.puuid == summonerPUUID);
 
-            LastGamesWinRateDto lastGames = new LastGamesWinRateDto
+            SummonerLastGamesDto lastGames = new SummonerLastGamesDto
             {
                 gamesPlayed = matches.Count(),
                 wins = participants.Count(p => p.win),
@@ -165,7 +167,7 @@ namespace Business_Logic_Layer.Repository
 
             return lastGames;
         }
-        public async Task<LeagueEntryDto> GetSummonerLeagueEntries(string summonerName)
+        public async Task<SummonerLeagueEntryDto> GetLeagueEntries(string summonerName)
         {
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
             
@@ -175,7 +177,7 @@ namespace Business_Logic_Layer.Repository
             
             return result;
         }
-        public async Task<List<SummonerMasteryDto>> GetSummonerChampionsMastery(string summonerName)
+        public async Task<List<SummonerMasteryDto>> GetChampionsMastery(string summonerName)
         {
             var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
             var result = await _summonerMasteryService.GetSummonerChampionsMastery(summonerPUUID);
@@ -210,6 +212,81 @@ namespace Business_Logic_Layer.Repository
             }
 
             return summonerMasteryList;
+        }
+        public async Task<List<SummonerMatchDetailsDto>> GetMatchesDetails(string summonerName)
+        {
+            var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
+            var matchesIDs = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
+            if (!matchesIDs.Any()) return new List<SummonerMatchDetailsDto>();
+
+            var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchesIDs, summonerPUUID); ;
+
+            List<SummonerMatchDetailsDto> matchDetailsList = new ();
+            List<TeamMember> teamList = new ();
+            List<TeamMember> opponentsList = new ();
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            foreach (var match in matches)
+            {
+                var participant = match.info.participants.FirstOrDefault(p => p.puuid == summonerPUUID);
+
+                if(participant != null)
+                {
+                    var team = match.info.participants.Take(5)
+                                                      .Select(p => new TeamMember
+                                                      {
+                                                        name = !p.summonerName.Equals("") ? p.summonerName : "Unknown",
+                                                        champion = p.championName,
+                                                        tagLine = p.riotIdTagline,
+                                                        fullName = $"{p.summonerName} #{p.riotIdTagline}"
+                                                      })
+                                                      .ToList();
+
+                    // Ostatnie 5 uczestników jako opponents
+                    var opponents = match.info.participants.Skip(5)
+                                                           .Take(5)
+                                                           .Select(p => new TeamMember
+                                                           {
+                                                               name = !p.summonerName.Equals("") ? p.summonerName : "Unknown",
+                                                               champion = p.championName,
+                                                               tagLine = p.riotIdTagline,
+                                                               fullName = $"{p.summonerName} #{p.riotIdTagline}"
+                                                           })
+                                                           .ToList();
+
+                    matchDetailsList.Add(new SummonerMatchDetailsDto
+                    {
+                        timeAgo = SummonerMatchDetailsHelper.GetTimeAgo(match.info.gameStartTimestamp),
+                        champion = participant?.championName,
+                        kills = participant.kills,
+                        deaths = participant.deaths,
+                        assists = participant.assists,
+                        kdaRatio = participant.challenges.kda,
+                        items = new[] {participant.item0, participant.item1, participant.item2, participant.item3, participant.item4, participant.item5, participant.item6 }
+                                       .Select(id => id)
+                                       .Where(value => value > 0)
+                                       .ToArray(), 
+                        spell1 =  SummonerSpellHelper.GetSummonerSpell(participant.summoner1Id),
+                        spell2 =  SummonerSpellHelper.GetSummonerSpell(participant.summoner2Id),
+                        runePrimary =  SummonerRunesHelper.GetRuneIconPath(participant.perks.styles[0].selections[0].perk),
+                        runeSecondary =  SummonerRunesHelper.GetRuneIconPath(participant.perks.styles[1].style),
+
+                        cs = SummonerMatchDetailsHelper.GetCS(participant.totalMinionsKilled, 
+                                                              participant.neutralMinionsKilled, 
+                                                              match.info.gameDuration),
+                        result = participant.win ? "Zwycięstwo" : "Przegrana",
+                        team = team,
+                        opponents = opponents,
+                    });
+                }
+                
+            }
+            stopwatch.Stop();
+            Console.Clear();
+            Console.WriteLine("Time elapsed: {0}", stopwatch.Elapsed);
+
+            return matchDetailsList;
+
         }
 
         // test
