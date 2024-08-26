@@ -270,6 +270,7 @@ namespace Business_Logic_Layer.Repository
                         spell2 =  SummonerSpellHelper.GetSummonerSpell(participant.summoner2Id),
                         runePrimary =  SummonerRunesHelper.GetRuneIconPath(participant.perks.styles[0].selections[0].perk),
                         runeSecondary =  SummonerRunesHelper.GetRuneIconPath(participant.perks.styles[1].style),
+                        gameDuration = GameDurationHelper.GetGameDuration(match.info.gameDuration),
 
                         cs = SummonerMatchDetailsHelper.GetCS(participant.totalMinionsKilled, 
                                                               participant.neutralMinionsKilled, 

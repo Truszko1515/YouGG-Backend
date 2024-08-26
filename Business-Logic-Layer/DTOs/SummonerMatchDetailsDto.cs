@@ -20,6 +20,7 @@ namespace Business_Logic_Layer.Dtos
         public string? spell2 { get; set; }
         public string? runePrimary { get; set; }
         public string? runeSecondary { get; set; }
+        public string? gameDuration { get; set; }
         public string? cs { get; set; } // CS 198 (8.4)
         public string? result { get; set; } // Win or lose
         public List<TeamMember>? team { get; set; } 

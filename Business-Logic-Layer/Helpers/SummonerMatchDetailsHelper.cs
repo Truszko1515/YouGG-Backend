@@ -16,9 +16,21 @@ namespace Business_Logic_Layer.Helpers
             TimeSpan timeSinceGame = DateTime.UtcNow - gameStartDateTime;
 
             // Wyciągnięcie liczby dni
-            int daysAgo = (int)timeSinceGame.TotalDays;
+            int hoursAgo = (int)timeSinceGame.TotalHours;
 
-            var result = $"Mecz został rozegrany {daysAgo} dni temu.";
+            //var result = $"{daysAgo} dni temu.";
+            string result = string.Empty;
+
+            if(hoursAgo >= 24)
+            {
+                var dasyAgo = (int)timeSinceGame.TotalDays;
+                result = $"{dasyAgo} dni temu";
+            }
+            else
+            {
+                 result = $"{hoursAgo} godzin temu";
+            }
+
 
             return result;
         }

@@ -18,7 +18,14 @@ namespace Business_Logic_Layer.Helpers
             string firstLetter = input.Substring(0, 1).ToUpper();
             string remainingLetters = input.Length > 1 ? input.Substring(1).ToLower() : string.Empty;
 
-            return firstLetter + remainingLetters;
+            StringBuilder stringBuilder = new StringBuilder(firstLetter);
+            stringBuilder.Append(remainingLetters);
+
+            string result = stringBuilder.ToString().Replace(" ", "");
+
+            if (result == "Aurelionsol") result = "AurelionSol";
+
+            return result;
         }
     }
 }
