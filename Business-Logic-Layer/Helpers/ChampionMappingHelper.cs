@@ -18,7 +18,7 @@ namespace Business_Logic_Layer.Helpers
             var response = await client.GetStringAsync(url);
             var data = JsonConvert.DeserializeObject<ChampionData>(response);
 
-            return data.Data.ToDictionary(champion => long.Parse(champion.Value.Key), champion => champion.Value.Id);
+            return data.Data.ToDictionary(champion => long.Parse(champion.Value.Key), champion => champion.Key);
         }
     }
 

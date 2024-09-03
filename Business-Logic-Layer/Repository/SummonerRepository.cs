@@ -188,7 +188,7 @@ namespace Business_Logic_Layer.Repository
 
             // Mapowanie championId na nazwy bohaterów
             var mappedResult = finalResult.Select(dto => (
-                name: CapitalizeFirstLetterHelper.CapitalizeFirstLetter(champions.ContainsKey(dto.championId) ? champions[dto.championId].Replace("'", "") : "Unknown"),
+                name: (champions.ContainsKey(dto.championId) ? champions[dto.championId].Replace("'", "") : "Unknown"),
                 masteryLevel: dto.championLevel,
                 points: dto.championPoints
             )).ToList();
@@ -198,7 +198,7 @@ namespace Business_Logic_Layer.Repository
             foreach ( var champion in mappedResult) 
             {
                 summonerMasteryList.Add(new SummonerMasteryDto {
-                    name = champion.name.Replace(" iv","IV"),
+                    name = champion.name,
                     masteryLevel = champion.masteryLevel,
                     points = champion.points
                 });
@@ -219,7 +219,7 @@ namespace Business_Logic_Layer.Repository
             var matchesIDs = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
             if (!matchesIDs.Any()) return new List<SummonerMatchDetailsDto>();
 
-            var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchesIDs, summonerPUUID); ;
+            var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchesIDs, summonerPUUID); 
 
             List<SummonerMatchDetailsDto> matchDetailsList = new ();
             List<TeamMember> teamList = new ();

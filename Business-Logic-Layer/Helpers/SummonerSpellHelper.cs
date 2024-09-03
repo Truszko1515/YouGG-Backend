@@ -29,26 +29,5 @@ namespace Business_Logic_Layer.Helpers
             return "Description not found for given key";
         }
     }
-
-
-    public class SummonerSpellData
-    {
-        [JsonPropertyName("data")]
-        public Dictionary<string, SummonerSpell> Data { get; set; }
-    }
-
-    public class SummonerSpell
-    {
-        [JsonPropertyName("key")]
-        public string Key { get; set; }
-
-        [JsonPropertyName("image")]
-        public SummonerSpellImage Image { get; set; }
-    }
-
-    public class SummonerSpellImage
-    {
-        [JsonPropertyName("full")]
-        public string Full { get; set; }
-    }
+    
 }

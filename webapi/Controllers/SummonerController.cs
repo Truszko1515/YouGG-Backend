@@ -73,5 +73,11 @@ namespace webapi.Controllers
         {
             return Ok(await _summonerRepository.GetMatchesDetails(summonerName));
         }
+
+        [HttpGet("{summonerName}")]
+        public async Task<ActionResult> TrySaveDataToDB(string summonerName)
+        {
+            return Ok(await _summonerRepository.GetMatchesDetails(summonerName));
+        }
     }
 }

@@ -1,7 +1,9 @@
 using Business_Logic_Layer.Authentication;
 using Business_Logic_Layer.Interfaces;
+using Business_Logic_Layer.Interfaces.GlobalStats;
 using Business_Logic_Layer.Repository;
 using Business_Logic_Layer.Services;
+using Business_Logic_Layer.Services.InsertingGlobalStatsServices;
 using Business_Logic_Layer.Validation;
 using Data_Acces_Layer;
 using Data_Acces_Layer.Interfaces;
@@ -57,7 +59,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // ------ HTTP Client config for every service that sends requests to RIOT API. -------
 builder.Services.AddHttpClient();
-
 builder.Services.AddHttpClient<MatchDetailsService>((Serviceprovider, httpClient) =>
 {
     var configuration = Serviceprovider.GetRequiredService<IConfiguration>();
@@ -143,6 +144,8 @@ builder.Services.AddHttpClient<ISummonerMasteryService, SummonerMasteryService>(
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
 
+builder.Services.AddTransient<ILaneAvgTotalCsService, LaneAvgTotalCsService>();
+builder.Services.AddTransient<IChampionsStatisticService, ChampionsStatisticService>();
 // ------------------------------------------------------------------------------------------------------------------
 
 
@@ -153,7 +156,6 @@ builder.Services.AddTransient<MatchDetailsService>(Serviceprovider =>
 
     return new MatchDetailsService(httpClient);
 });
-
 builder.Services.AddTransient<IMatchDetailsService, CachedMatchesDetailsService>(Serviceprovider =>
 {
     var matchDetailsService = Serviceprovider.GetRequiredService<MatchDetailsService>();
@@ -164,14 +166,13 @@ builder.Services.AddTransient<IMatchDetailsService, CachedMatchesDetailsService>
 
 builder.Services.AddTransient<DatabaseHealthCheckService>();
 
-
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-
 builder.Services.AddTransient<IJwtProvider, JwtProvider>();
 
 builder.Services.AddTransient<ISummonerRepository, SummonerRepository>();
-
 builder.Services.AddTransient<IMemberRepository, MemberRepository>();
+builder.Services.AddTransient<IGlobalStatsRepository, GlobalStatsRepository>();
+builder.Services.AddTransient<IGlobalStatisticsRepository, GlobalStatisticsRepository>();
 
 builder.Services.AddTransient<GlobalErrorHandlingMiddleware>();
 

@@ -12,6 +12,7 @@ using Business_Logic_Layer.Dtos;
 
 namespace webapi.Controllers
 {
+    [Authorize]
     [Route("api/summoner/[action]/")]
     [EnableCors("LocalHostPolicy")]
     [ApiController]
