@@ -27,9 +27,13 @@ namespace webapi.Controllers
 
             if (insertSucceed.result)
             {
+                Console.Clear();
+                Console.WriteLine($"Dodano do bazy {insertSucceed.championsInserted} meczy");
                 return Ok($"Dodano do bazy {insertSucceed.championsInserted} meczy");
             }
 
+            Console.Clear();
+            Console.WriteLine("Dodawanie do bazy  statystyk globalnych Championów NIE POWIODŁO SIĘ");
             return BadRequest("Dodawanie do bazy  statystyk globalnych Championów NIE POWIODŁO SIĘ");
         }
     }

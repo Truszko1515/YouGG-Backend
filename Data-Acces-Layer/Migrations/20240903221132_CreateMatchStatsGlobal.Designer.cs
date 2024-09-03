@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data_Acces_Layer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240903161029_CreateMatchStatsGlobal")]
+    [Migration("20240903221132_CreateMatchStatsGlobal")]
     partial class CreateMatchStatsGlobal
     {
         /// <inheritdoc />
@@ -49,7 +49,10 @@ namespace Data_Acces_Layer.Migrations
                     b.Property<int>("Deaths")
                         .HasColumnType("int");
 
-                    b.Property<string>("GameLength")
+                    b.Property<int>("GameLengthSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GameLengthString")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

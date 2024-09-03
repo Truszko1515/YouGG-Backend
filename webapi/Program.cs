@@ -144,7 +144,6 @@ builder.Services.AddHttpClient<ISummonerMasteryService, SummonerMasteryService>(
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
 
-builder.Services.AddTransient<ILaneAvgTotalCsService, LaneAvgTotalCsService>();
 builder.Services.AddTransient<IChampionsStatisticService, ChampionsStatisticService>();
 // ------------------------------------------------------------------------------------------------------------------
 

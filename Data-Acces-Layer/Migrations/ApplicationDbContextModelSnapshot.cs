@@ -46,7 +46,10 @@ namespace Data_Acces_Layer.Migrations
                     b.Property<int>("Deaths")
                         .HasColumnType("int");
 
-                    b.Property<string>("GameLength")
+                    b.Property<int>("GameLengthSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GameLengthString")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

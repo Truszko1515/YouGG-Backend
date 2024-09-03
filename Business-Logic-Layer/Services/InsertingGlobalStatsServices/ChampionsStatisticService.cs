@@ -33,7 +33,7 @@ namespace Business_Logic_Layer.Services.InsertingGlobalStatsServices
                 {
                     var participants = match.info.participants;
 
-                    foreach (var p in participants)
+                    foreach (var p in participants.Where(p => !p.gameEndedInEarlySurrender) )
                     {
                         var championToInsert = new MatchStatisticGlobal();
 
@@ -44,9 +44,10 @@ namespace Business_Logic_Layer.Services.InsertingGlobalStatsServices
                         championToInsert.Kills = p.kills;
                         championToInsert.Assists = p.assists;
                         championToInsert.Deaths = p.deaths;
-                        championToInsert.GameLength = GameDurationHelper.GetGameDuration(match.info.gameDuration);
+                        championToInsert.GameLengthString = GameDurationHelper.GetGameDuration(match.info.gameDuration);
+                        championToInsert.GameLengthSeconds = match.info.gameDuration;
                         championToInsert.TeamPosition = p.teamPosition;
-                        championToInsert.TotalCS = p.totalMinionsKilled + p.totalEnemyJungleMinionsKilled + p.totalEnemyJungleMinionsKilled;
+                        championToInsert.TotalCS = p.totalMinionsKilled + p.neutralMinionsKilled;
                         championToInsert.CSperMinute = SummonerMatchDetailsHelper.GetCSperMinute(p.totalMinionsKilled, p.neutralMinionsKilled, match.info.gameDuration);
                         championToInsert.Win = p.win;
                         championToInsert.VisionScore = p.visionScore;
@@ -55,19 +56,24 @@ namespace Business_Logic_Layer.Services.InsertingGlobalStatsServices
     
 
                         if (p.teamPosition == "JUNGLE")
+                        {
                             championToInsert.MinionsFirst10Minutes = (int)p.challenges.jungleCsBefore10Minutes;
-
+                            championToInsert.TotalCS = p.neutralMinionsKilled + p.totalMinionsKilled;
+                        }
+                            
                         bool success = await _globalStatsRepository.TryAddChampionDataAsync(championToInsert);
 
-                        if (!success)
+                        if (success)
                         {
-                            return (false, championsInserted); 
+                            championsInserted++;
                         }
-
-                        championsInserted++;
                     }
                 }
+
                 await _dbContext.SaveChangesAsync();
+
+                if(championsInserted == 0)
+                    return (false, championsInserted);
             }
             catch
             {

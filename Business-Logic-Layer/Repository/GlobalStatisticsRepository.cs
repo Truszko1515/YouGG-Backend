@@ -24,7 +24,6 @@ namespace Business_Logic_Layer.Repository
         private readonly ISummonerPUUIDService _summonerPUUIDService;
         private readonly IMatchesService  _matchesService;
         private readonly IMatchDetailsService _matchDetailsService;
-        private readonly ILaneAvgTotalCsService _laneAvgTotalCsService;
         private readonly IGlobalStatsRepository _globalStatsRepository;
         private readonly IChampionsStatisticService _championsStatisticService;
         private readonly ApplicationDbContext _dbContext;
@@ -33,7 +32,6 @@ namespace Business_Logic_Layer.Repository
         public GlobalStatisticsRepository(ISummonerPUUIDService summonerPUUIDService,
                                           IMatchesService matchesService,
                                           IMatchDetailsService matchDetailsService,
-                                          ILaneAvgTotalCsService laneAvgTotalCsService,
                                           IGlobalStatsRepository globalStatsRepository,
                                           IChampionsStatisticService championsStatisticService,
                                           ApplicationDbContext dbContext)
@@ -41,7 +39,6 @@ namespace Business_Logic_Layer.Repository
             _summonerPUUIDService = summonerPUUIDService;
             _matchesService = matchesService;
             _matchDetailsService = matchDetailsService;
-            _laneAvgTotalCsService = laneAvgTotalCsService;
             _globalStatsRepository = globalStatsRepository;
             _championsStatisticService = championsStatisticService;
             _dbContext = dbContext;
@@ -62,7 +59,6 @@ namespace Business_Logic_Layer.Repository
 
             return (false, 0);
         }
-
 
         // private - internal methods
     }

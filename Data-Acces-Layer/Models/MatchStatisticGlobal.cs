@@ -18,7 +18,8 @@ namespace Data_Acces_Layer.Models
         public int Kills { get; set; }
         public int Deaths { get; set; }
         public int Assists { get; set; }
-        public string GameLength { get; set; }
+        public string GameLengthString { get; set; }
+        public int GameLengthSeconds { get; set; }
         public string TeamPosition { get; set; }
         public int TotalCS { get; set; }
         public float CSperMinute { get; set; }

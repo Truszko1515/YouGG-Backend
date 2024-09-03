@@ -11,7 +11,6 @@ namespace Data_Acces_Layer.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
             migrationBuilder.CreateTable(
                 name: "MatchesStatisticsGlobal",
                 columns: table => new
@@ -25,7 +24,8 @@ namespace Data_Acces_Layer.Migrations
                     Kills = table.Column<int>(type: "int", nullable: false),
                     Deaths = table.Column<int>(type: "int", nullable: false),
                     Assists = table.Column<int>(type: "int", nullable: false),
-                    GameLength = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GameLengthString = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GameLengthSeconds = table.Column<int>(type: "int", nullable: false),
                     TeamPosition = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalCS = table.Column<int>(type: "int", nullable: false),
                     CSperMinute = table.Column<float>(type: "real", nullable: false),
@@ -45,7 +45,6 @@ namespace Data_Acces_Layer.Migrations
         {
             migrationBuilder.DropTable(
                 name: "MatchesStatisticsGlobal");
-
         }
     }
 }
