@@ -46,9 +46,16 @@ namespace Business_Logic_Layer.Services.InsertingGlobalStatsServices
                         championToInsert.Deaths = p.deaths;
                         championToInsert.GameLength = GameDurationHelper.GetGameDuration(match.info.gameDuration);
                         championToInsert.TeamPosition = p.teamPosition;
+                        championToInsert.TotalCS = p.totalMinionsKilled + p.totalEnemyJungleMinionsKilled + p.totalEnemyJungleMinionsKilled;
+                        championToInsert.CSperMinute = SummonerMatchDetailsHelper.GetCSperMinute(p.totalMinionsKilled, p.neutralMinionsKilled, match.info.gameDuration);
+                        championToInsert.Win = p.win;
+                        championToInsert.VisionScore = p.visionScore;
+                        championToInsert.TotalDamageDealtToChampions = p.totalDamageDealtToChampions;
+                        championToInsert.WardTakedowns = p.challenges.wardTakedowns;
+    
 
                         if (p.teamPosition == "JUNGLE")
-                            championToInsert.MinionsFirst10Minutes = p.totalAllyJungleMinionsKilled + p.totalEnemyJungleMinionsKilled;
+                            championToInsert.MinionsFirst10Minutes = (int)p.challenges.jungleCsBefore10Minutes;
 
                         bool success = await _globalStatsRepository.TryAddChampionDataAsync(championToInsert);
 
@@ -62,7 +69,7 @@ namespace Business_Logic_Layer.Services.InsertingGlobalStatsServices
                 }
                 await _dbContext.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch
             {
                 throw new HttpRequestException("błąd przy insertowaniu statystyk bohatera", null, HttpStatusCode.InternalServerError);
             }

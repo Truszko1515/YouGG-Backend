@@ -20,6 +20,12 @@ namespace Data_Acces_Layer.Models
         public int Assists { get; set; }
         public string GameLength { get; set; }
         public string TeamPosition { get; set; }
+        public int TotalCS { get; set; }
+        public float CSperMinute { get; set; }
+        public bool Win { get; set; }
+        public int VisionScore { get; set; }
+        public int TotalDamageDealtToChampions { get; set; }
+        public int WardTakedowns { get; set; }
     }
 }
 

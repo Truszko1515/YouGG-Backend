@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data_Acces_Layer.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240903152515_CreateMatchStatsGlobal")]
+    [Migration("20240903161029_CreateMatchStatsGlobal")]
     partial class CreateMatchStatsGlobal
     {
         /// <inheritdoc />
@@ -25,27 +25,6 @@ namespace Data_Acces_Layer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Data_Acces_Layer.Models.LaneAverageMinionsGlobal", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<float>("AverageMonstersKilled")
-                        .HasColumnType("real");
-
-                    b.Property<string>("LaneName")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("VARCHAR(15)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LaneAverageMinionsGlobal");
-                });
-
             modelBuilder.Entity("Data_Acces_Layer.Models.MatchStatisticGlobal", b =>
                 {
                     b.Property<int>("id")
@@ -56,6 +35,9 @@ namespace Data_Acces_Layer.Migrations
 
                     b.Property<int>("Assists")
                         .HasColumnType("int");
+
+                    b.Property<float>("CSperMinute")
+                        .HasColumnType("real");
 
                     b.Property<string>("ChampionName")
                         .IsRequired()
@@ -85,6 +67,21 @@ namespace Data_Acces_Layer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("TotalCS")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalDamageDealtToChampions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VisionScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WardTakedowns")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Win")
+                        .HasColumnType("bit");
+
                     b.HasKey("id");
 
                     b.ToTable("MatchesStatisticsGlobal");
@@ -105,20 +102,6 @@ namespace Data_Acces_Layer.Migrations
                     b.HasKey("RoleId");
 
                     b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("Data_Acces_Layer.Models.SummonerDataExpiration", b =>
-                {
-                    b.Property<string>("SummonerName")
-                        .HasMaxLength(35)
-                        .HasColumnType("NVARCHAR(35)");
-
-                    b.Property<DateTime>("NextTimeAllowed")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("SummonerName");
-
-                    b.ToTable("SummonerDataExpiration");
                 });
 
             modelBuilder.Entity("Data_Acces_Layer.Models.User", b =>

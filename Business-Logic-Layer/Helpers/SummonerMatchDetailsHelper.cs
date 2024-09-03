@@ -47,5 +47,16 @@ namespace Business_Logic_Layer.Helpers
 
             return result;
         }
+
+        public static float GetCSperMinute(int minionsKilled, int neutralMinionsKilled, int gameDuration)
+        {
+            // in minutes
+            gameDuration = gameDuration / 60;
+
+            int totalScore = minionsKilled + neutralMinionsKilled;
+            decimal CsPerMinute = Math.Round((decimal)((decimal)totalScore / (int)gameDuration), 1);
+
+            return (float)Math.Round(CsPerMinute,1);
+        }
     }
 }

@@ -29,9 +29,10 @@ namespace Data_Acces_Layer.Repository
 
                 return true;
             }
-            catch(Exception ex)
+            catch
             {
-                throw new HttpRequestException(ex.InnerException.Message, null, HttpStatusCode.InternalServerError);
+                throw new HttpRequestException("Błąd przy insertowaniu meczu do globalnych statystyk"
+                                                , null, HttpStatusCode.InternalServerError);
             }         
         }
     }

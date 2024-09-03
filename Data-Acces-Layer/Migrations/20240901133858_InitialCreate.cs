@@ -22,20 +22,7 @@ namespace Data_Acces_Layer.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.RoleId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "summonerDataExpirations",
-                columns: table => new
-                {
-                    SummonerName = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    HasExpired = table.Column<bool>(type: "bit", nullable: false),
-                    LastTimePlayed = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_summonerDataExpirations", x => x.SummonerName);
-                });
+                });            
 
             migrationBuilder.CreateTable(
                 name: "Users",
@@ -85,8 +72,6 @@ namespace Data_Acces_Layer.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "summonerDataExpirations");
 
             migrationBuilder.DropTable(
                 name: "UserRoles");
