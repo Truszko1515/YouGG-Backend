@@ -3,6 +3,7 @@ using Business_Logic_Layer.Dtos;
 using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Interfaces.GlobalStats;
 using Business_Logic_Layer.Services;
+using Business_Logic_Layer.Services.GlobalStatsServices;
 using Data_Acces_Layer;
 using Data_Acces_Layer.Interfaces;
 using Data_Acces_Layer.Repository;
@@ -21,27 +22,28 @@ namespace Business_Logic_Layer.Repository
 {
     public class GlobalStatisticsRepository : IGlobalStatisticsRepository
     {
+        // Summoner services
         private readonly ISummonerPUUIDService _summonerPUUIDService;
         private readonly IMatchesService  _matchesService;
         private readonly IMatchDetailsService _matchDetailsService;
-        private readonly IGlobalStatsRepository _globalStatsRepository;
+
+        // Service inserting or getting champions stats to/from Database
+        private readonly IChampionsStatisticInsertService _championsStatisticInsertService;
         private readonly IChampionsStatisticService _championsStatisticService;
-        private readonly ApplicationDbContext _dbContext;
 
 
         public GlobalStatisticsRepository(ISummonerPUUIDService summonerPUUIDService,
                                           IMatchesService matchesService,
                                           IMatchDetailsService matchDetailsService,
-                                          IGlobalStatsRepository globalStatsRepository,
-                                          IChampionsStatisticService championsStatisticService,
-                                          ApplicationDbContext dbContext)
+                                          IChampionsStatisticInsertService championsStatisticInsertService,
+                                          IChampionsStatisticService championsStatisticService)
         {
             _summonerPUUIDService = summonerPUUIDService;
             _matchesService = matchesService;
             _matchDetailsService = matchDetailsService;
-            _globalStatsRepository = globalStatsRepository;
+            _championsStatisticInsertService = championsStatisticInsertService;
             _championsStatisticService = championsStatisticService;
-            _dbContext = dbContext;
+
         }
 
         public async Task<(bool result, int championsInserted)> UpdateChampionsData(string summonerName)
@@ -50,7 +52,7 @@ namespace Business_Logic_Layer.Repository
             var matchesIDs = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
             var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchesIDs, summonerPUUID);
 
-            var insertChampionDataGlobal = await _championsStatisticService.TryAddChampionDataAsync(matches);
+            var insertChampionDataGlobal = await _championsStatisticInsertService.TryAddChampionDataAsync(matches);
             
             if(insertChampionDataGlobal.result)
             {
@@ -59,6 +61,8 @@ namespace Business_Logic_Layer.Repository
 
             return (false, 0);
         }
+
+        // Method that will use IChampionsStatisticService to retreive champion statistics.
 
         // private - internal methods
     }

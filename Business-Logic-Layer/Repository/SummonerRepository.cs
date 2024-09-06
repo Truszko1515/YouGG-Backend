@@ -77,7 +77,7 @@ namespace Business_Logic_Layer.Repository
             {
                 champs.Add(new SummonerChampionsPlayRateDto()
                 {
-                    name = champName,
+                    name = champName == "FiddleSticks" ? "Fiddlesticks" : champName,
                     kda = championCounts[champName].Count > 0 ? ((float)championCounts[champName].TotalKda) / championCounts[champName].Count : 0,
                     losses = (championCounts[champName].Count - championCounts[champName].wins),
                     winRate = (int)Math.Round(((double)championCounts[champName].wins / championCounts[champName].Count) * 100),
@@ -236,7 +236,7 @@ namespace Business_Logic_Layer.Repository
                                                       .Select(p => new TeamMember
                                                       {
                                                         name = !p.summonerName.Equals("") ? p.summonerName : "Unknown",
-                                                        champion = p.championName,
+                                                          champion = p.championName == "FiddleSticks" ? "Fiddlesticks" : p.championName,
                                                         tagLine = p.riotIdTagline,
                                                         fullName = $"{p.summonerName} #{p.riotIdTagline}"
                                                       })
@@ -248,7 +248,7 @@ namespace Business_Logic_Layer.Repository
                                                            .Select(p => new TeamMember
                                                            {
                                                                name = !p.summonerName.Equals("") ? p.summonerName : "Unknown",
-                                                               champion = p.championName,
+                                                               champion = p.championName == "FiddleSticks" ? "Fiddlesticks" : p.championName,
                                                                tagLine = p.riotIdTagline,
                                                                fullName = $"{p.summonerName} #{p.riotIdTagline}"
                                                            })
@@ -257,7 +257,7 @@ namespace Business_Logic_Layer.Repository
                     matchDetailsList.Add(new SummonerMatchDetailsDto
                     {
                         timeAgo = SummonerMatchDetailsHelper.GetTimeAgo(match.info.gameStartTimestamp),
-                        champion = participant?.championName,
+                        champion = participant?.championName == "FiddleSticks" ? "Fiddlesticks" : participant?.championName,
                         kills = participant.kills,
                         deaths = participant.deaths,
                         assists = participant.assists,
@@ -289,28 +289,5 @@ namespace Business_Logic_Layer.Repository
             return matchDetailsList;
 
         }
-
-        // test
-        public async Task<IEnumerable<double>> GetSummonerKillsDeathsAssists(string summonerName)
-        {
-
-            var summonerPUUID = await _summonerPUUIDService.GetSummonerPUUIDByNameAsync(summonerName);
-            var matchIDs = await _matchesService.GetMatchListByPUUIDAsync(summonerPUUID);
-            var matches = await _matchDetailsService.GetMatchDetailsListByMatchIdsAsync(matchIDs, summonerPUUID);
-
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
-            var KDA = matches.SelectMany(match => match.info.participants).
-                              Where(participant => participant.puuid == summonerPUUID).
-                              Select(participant => Math.Round((participant.kills + participant.assists) / (float)(participant.deaths != 0 ? participant.deaths : 1), 2 ));
-
-            stopwatch.Stop();
-            var time = stopwatch.Elapsed;
-
-            return KDA;
-        }
-
-
-
     }
 }

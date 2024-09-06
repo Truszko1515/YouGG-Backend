@@ -3,7 +3,7 @@ using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Interfaces.GlobalStats;
 using Business_Logic_Layer.Repository;
 using Business_Logic_Layer.Services;
-using Business_Logic_Layer.Services.InsertingGlobalStatsServices;
+using Business_Logic_Layer.Services.GlobalStatsServices;
 using Business_Logic_Layer.Validation;
 using Data_Acces_Layer;
 using Data_Acces_Layer.Interfaces;
@@ -144,6 +144,7 @@ builder.Services.AddHttpClient<ISummonerMasteryService, SummonerMasteryService>(
     httpClient.DefaultRequestHeaders.Add("X-Riot-Token", apiKey);
 });
 
+builder.Services.AddTransient<IChampionsStatisticInsertService, ChampionsStatisticInsertService>();
 builder.Services.AddTransient<IChampionsStatisticService, ChampionsStatisticService>();
 // ------------------------------------------------------------------------------------------------------------------
 

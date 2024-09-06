@@ -10,13 +10,13 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business_Logic_Layer.Services.InsertingGlobalStatsServices
+namespace Business_Logic_Layer.Services.GlobalStatsServices
 {
-    public class ChampionsStatisticService : IChampionsStatisticService
+    public class ChampionsStatisticInsertService : IChampionsStatisticInsertService
     {
         private readonly IGlobalStatsRepository _globalStatsRepository;
         private readonly ApplicationDbContext _dbContext;
-        public ChampionsStatisticService(IGlobalStatsRepository globalStatsRepository,
+        public ChampionsStatisticInsertService(IGlobalStatsRepository globalStatsRepository,
                                          ApplicationDbContext dbContext)
         {
             _globalStatsRepository = globalStatsRepository;
